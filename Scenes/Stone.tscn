@@ -129,12 +129,13 @@ animations = [{
 radius = 7.0
 
 [node name="Stone" type="StaticBody2D"]
-collision_layer = 8
+collision_layer = 16
 
 [node name="Stone_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_5n3gc")
-animation = &"Soapstone"
+animation = &"Chalk"
 
 [node name="Stone_Collsion" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, 1)
 shape = SubResource("CircleShape2D_3cy2e")

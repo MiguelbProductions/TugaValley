@@ -165,7 +165,7 @@ height = 9.0
 
 [node name="Tree" type="StaticBody2D"]
 y_sort_enabled = true
-collision_layer = 4
+collision_layer = 8
 script = SubResource("GDScript_5qhe8")
 ExcludeTrees = Array[String](["Cursedtree_Default", "DeadOld_Default", "Pinetree_Default"])
 

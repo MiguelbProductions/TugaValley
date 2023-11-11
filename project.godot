@@ -50,9 +50,9 @@ Right={
 
 2d_physics/layer_1="Player"
 2d_physics/layer_2="Builds"
-2d_physics/layer_3="Trees"
-2d_physics/layer_4="Stones"
-2d_physics/layer_5="Bush"
+2d_physics/layer_3="Floor"
+2d_physics/layer_4="Trees"
+2d_physics/layer_5="Stones"
 
 [rendering]
 

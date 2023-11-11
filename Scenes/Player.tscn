@@ -27,16 +27,16 @@ func Move():
 var LastDirection = Vector2.ZERO
 
 func Animate():
-	if (velocity.x > 0.1): 
+	if (velocity.x > 0): 
 		Player_Anim.play(\"Walk_Right\")
 		LastDirection = Vector2(1, 0)
-	elif (velocity.x < -0.1): 
+	elif (velocity.x < 0): 
 		Player_Anim.play(\"Walk_Left\")
 		LastDirection = Vector2(-1, 0)
-	elif (velocity.y > 0.1): 
+	elif (velocity.y > 0): 
 		Player_Anim.play(\"Walk_Down\")
 		LastDirection = Vector2(0, 1)
-	elif (velocity.y < -0.1): 
+	elif (velocity.y < 0): 
 		Player_Anim.play(\"Walk_Up\")
 		LastDirection = Vector2(0, -1)
 	else: 
@@ -379,7 +379,7 @@ height = 8.0
 
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
-collision_mask = 14
+collision_mask = 30
 script = SubResource("GDScript_y6knj")
 
 [node name="Player_Anim" type="AnimatedSprite2D" parent="."]
