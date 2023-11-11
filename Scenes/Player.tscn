@@ -6,19 +6,48 @@
 [sub_resource type="GDScript" id="GDScript_y6knj"]
 script/source = "extends CharacterBody2D
 
-const SPEED = 300.0
+@onready var Player_Anim = $Player_Anim
 
-func _physics_process(delta):
-	var directionX = Input.get_axis(\"ui_left\", \"ui_right\")
-	var directionY = Input.get_axis(\"ui_left\", \"ui_right\")
+const SPEED = 100
+
+func Move():
+	var directionX = Input.get_axis(\"Left\", \"Right\")
+	var directionY = Input.get_axis(\"Up\", \"Down\")
 	
-	if directionX: velocity.x = directionX * SPEED
+	if directionX: velocity.x = directionX
 	else: velocity.x = move_toward(velocity.x, 0, SPEED)
 	
-	if directionY: velocity.y = directionY * SPEED
+	if directionY: velocity.y = directionY
 	else: velocity.y = move_toward(velocity.y, 0, SPEED)
 	
+	velocity = velocity.normalized() * SPEED
+	
 	move_and_slide()
+
+var LastDirection = Vector2.ZERO
+
+func Animate():
+	if (velocity.x > 0.1): 
+		Player_Anim.play(\"Walk_Right\")
+		LastDirection = Vector2(1, 0)
+	elif (velocity.x < -0.1): 
+		Player_Anim.play(\"Walk_Left\")
+		LastDirection = Vector2(-1, 0)
+	elif (velocity.y > 0.1): 
+		Player_Anim.play(\"Walk_Down\")
+		LastDirection = Vector2(0, 1)
+	elif (velocity.y < -0.1): 
+		Player_Anim.play(\"Walk_Up\")
+		LastDirection = Vector2(0, -1)
+	else: 
+		if (LastDirection.x == 1): Player_Anim.play(\"Idle_Right\")
+		elif (LastDirection.x == -1): Player_Anim.play(\"Idle_Left\")
+		elif (LastDirection.y == 1): Player_Anim.play(\"Idle_Down\")
+		elif (LastDirection.y == -1): Player_Anim.play(\"Idle_Up\")
+
+func _physics_process(delta):
+	Move()
+	Animate()
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ekvgs"]
@@ -345,17 +374,23 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dqmir"]
-radius = 5.0
-height = 20.0
+radius = 4.0
+height = 8.0
 
 [node name="Player" type="CharacterBody2D"]
+y_sort_enabled = true
+collision_mask = 14
 script = SubResource("GDScript_y6knj")
 
 [node name="Player_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_mbhxc")
 animation = &"Idle_Down"
-frame_progress = 0.0684664
+autoplay = "Idle_Down"
+frame_progress = 0.124976
+offset = Vector2(0, -12)
 
 [node name="Player_Collision" type="CollisionShape2D" parent="."]
-position = Vector2(0, 6)
 shape = SubResource("CapsuleShape2D_dqmir")
+
+[node name="Camera" type="Camera2D" parent="."]
+zoom = Vector2(4.5, 4.5)

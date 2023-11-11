@@ -1,0 +1,180 @@
+[gd_scene load_steps=15 format=3 uid="uid://dyifolmkn04vr"]
+
+[ext_resource type="Texture2D" uid="uid://dvjw3t0o8d3jm" path="res://Data/Sprites/Nature/alltrees_shadow.png" id="1_l328a"]
+
+[sub_resource type="GDScript" id="GDScript_5qhe8"]
+script/source = "extends StaticBody2D
+
+@export var Season = \"Spring\"
+@export var Tree_Type = \"Appletree_Default\"
+
+@export var RandomTree_of_Season = true
+@export var ExcludeTrees: Array[String]
+
+@onready var Tree_sprite = $Tree_Sprite
+
+var TreeDicionary = {
+	1: \"Appletree_Default\",
+	2: \"Birchtree_Default\",
+	3: \"CherryBlossomtree_Default\",
+	4: \"Cursedtree_Default\",
+	5: \"DeadOld_Default\",
+	6: \"Dragontree_Default\",
+	7: \"Orangetree_Default\",
+	8: \"Peartree_Default\",
+	9: \"Pinetree_Default\",
+	10: \"Plumtree_Default\",
+}
+
+
+func _ready():
+	if (RandomTree_of_Season):  
+		Tree_Type = TreeDicionary[randi_range(1, 10)]
+		
+		while Tree_Type in ExcludeTrees: Tree_Type = TreeDicionary[randi_range(1, 10)]
+	
+	Tree_sprite.play(Tree_Type)
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lbe54"]
+atlas = ExtResource("1_l328a")
+region = Rect2(0, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ccf2g"]
+atlas = ExtResource("1_l328a")
+region = Rect2(64, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uxe8r"]
+atlas = ExtResource("1_l328a")
+region = Rect2(64, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_um67n"]
+atlas = ExtResource("1_l328a")
+region = Rect2(96, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4objk"]
+atlas = ExtResource("1_l328a")
+region = Rect2(128, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0b5as"]
+atlas = ExtResource("1_l328a")
+region = Rect2(32, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_onqlg"]
+atlas = ExtResource("1_l328a")
+region = Rect2(32, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ohdjn"]
+atlas = ExtResource("1_l328a")
+region = Rect2(0, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rbsli"]
+atlas = ExtResource("1_l328a")
+region = Rect2(96, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f81m8"]
+atlas = ExtResource("1_l328a")
+region = Rect2(128, 0, 32, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0uv1n"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lbe54")
+}],
+"loop": true,
+"name": &"Appletree_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ccf2g")
+}],
+"loop": true,
+"name": &"Birchtree_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uxe8r")
+}],
+"loop": true,
+"name": &"CherryBlossomtree_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_um67n")
+}],
+"loop": true,
+"name": &"Cursedtree_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4objk")
+}],
+"loop": true,
+"name": &"DeadOld_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0b5as")
+}],
+"loop": true,
+"name": &"Dragontree_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_onqlg")
+}],
+"loop": true,
+"name": &"Orangetree_Default",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ohdjn")
+}],
+"loop": true,
+"name": &"Peartree_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rbsli")
+}],
+"loop": true,
+"name": &"Pinetree_Default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f81m8")
+}],
+"loop": true,
+"name": &"Plumtree_Default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wrhuo"]
+radius = 2.0
+height = 9.0
+
+[node name="Tree" type="StaticBody2D"]
+y_sort_enabled = true
+collision_layer = 4
+script = SubResource("GDScript_5qhe8")
+ExcludeTrees = Array[String](["Cursedtree_Default", "DeadOld_Default", "Pinetree_Default"])
+
+[node name="Tree_Sprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_0uv1n")
+animation = &"Appletree_Default"
+offset = Vector2(0, -6)
+
+[node name="Tree_Collsion" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_wrhuo")

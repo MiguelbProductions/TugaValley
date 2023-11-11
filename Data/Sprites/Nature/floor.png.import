@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://rger6aibnbrg"
-path="res://.godot/imported/tree_shake.png-c41c379547bd4b1831ea5de9b8533abe.ctex"
+uid="uid://d34g2jt2g4nw7"
+path="res://.godot/imported/floor.png-ef841a985e84327582b8e9e59d5e1d82.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Data/Sprites/Nature/tree_shake.png"
-dest_files=["res://.godot/imported/tree_shake.png-c41c379547bd4b1831ea5de9b8533abe.ctex"]
+source_file="res://Data/Sprites/Nature/floor.png"
+dest_files=["res://.godot/imported/floor.png-ef841a985e84327582b8e9e59d5e1d82.ctex"]
 
 [params]
 
