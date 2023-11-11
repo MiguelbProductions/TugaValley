@@ -1,0 +1,140 @@
+[gd_scene load_steps=14 format=3 uid="uid://cp2508vycjrs6"]
+
+[ext_resource type="Texture2D" uid="uid://dul1u3rdvumrr" path="res://Data/Sprites/Nature/stone.png" id="1_qjo88"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ufnda"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x0eee"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4rl5a"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vsxod"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fvk15"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yy3t4"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(112, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_44blv"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(128, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_552n8"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(144, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w2nfy"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_00wsh"]
+atlas = ExtResource("1_qjo88")
+region = Rect2(96, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5n3gc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ufnda")
+}],
+"loop": true,
+"name": &"Chalk",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x0eee")
+}],
+"loop": true,
+"name": &"Copper",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4rl5a")
+}],
+"loop": true,
+"name": &"Diabase",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vsxod")
+}],
+"loop": true,
+"name": &"Gold",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fvk15")
+}],
+"loop": true,
+"name": &"Mudstone",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yy3t4")
+}],
+"loop": true,
+"name": &"Obsidian",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_44blv")
+}],
+"loop": true,
+"name": &"Pumice",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_552n8")
+}],
+"loop": true,
+"name": &"Scoria",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w2nfy")
+}],
+"loop": true,
+"name": &"Silver",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_00wsh")
+}],
+"loop": true,
+"name": &"Soapstone",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3cy2e"]
+radius = 7.0
+
+[node name="Stone" type="StaticBody2D"]
+collision_layer = 8
+
+[node name="Stone_Anim" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_5n3gc")
+animation = &"Soapstone"
+
+[node name="Stone_Collsion" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1)
+shape = SubResource("CircleShape2D_3cy2e")
