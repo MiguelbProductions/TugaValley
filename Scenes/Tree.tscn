@@ -11,7 +11,7 @@ script/source = "extends StaticBody2D
 @export var RandomTree_of_Season = true
 @export var ExcludeTrees: Array[String]
 
-@onready var Tree_sprite = $Tree_Sprite
+@onready var Tree_Anim = $Tree_Anim
 
 var TreeDicionary = {
 	1: \"Appletree_Default\",
@@ -33,7 +33,7 @@ func _ready():
 		
 		while Tree_Type in ExcludeTrees: Tree_Type = TreeDicionary[randi_range(1, 10)]
 	
-	Tree_sprite.play(Tree_Type)
+	Tree_Anim.play(Tree_Type)
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lbe54"]
@@ -169,7 +169,7 @@ collision_layer = 8
 script = SubResource("GDScript_5qhe8")
 ExcludeTrees = Array[String](["Cursedtree_Default", "DeadOld_Default", "Pinetree_Default"])
 
-[node name="Tree_Sprite" type="AnimatedSprite2D" parent="."]
+[node name="Tree_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_0uv1n")
 animation = &"Appletree_Default"
 offset = Vector2(0, -6)

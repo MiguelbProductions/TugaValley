@@ -1,6 +1,39 @@
-[gd_scene load_steps=14 format=3 uid="uid://cp2508vycjrs6"]
+[gd_scene load_steps=15 format=3 uid="uid://cp2508vycjrs6"]
 
 [ext_resource type="Texture2D" uid="uid://dul1u3rdvumrr" path="res://Data/Sprites/Nature/stone.png" id="1_qjo88"]
+
+[sub_resource type="GDScript" id="GDScript_8ucmd"]
+script/source = "extends StaticBody2D
+
+@export var Stone_Type = \"Chalk\"
+
+@export var RandomStone = true
+@export var ExcludeTStones: Array[String]
+
+@onready var Stone_Anim = $Stone_Anim
+
+var StoneDicionary = {
+	1: \"Chalk\",
+	2: \"Copper\",
+	3: \"Diabase\",
+	4: \"Gold\",
+	5: \"Mudstone\",
+	6: \"Obsidian\",
+	7: \"Pumice\",
+	8: \"Scoria\",
+	9: \"Silver\",
+	10: \"Soapstone\",
+}
+
+
+func _ready():
+	if (RandomStone):  
+		Stone_Type = StoneDicionary[randi_range(1, 10)]
+		
+		while Stone_Type in ExcludeTStones: Stone_Type = StoneDicionary[randi_range(1, 10)]
+	
+	Stone_Anim.play(Stone_Type)
+"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ufnda"]
 atlas = ExtResource("1_qjo88")
@@ -125,17 +158,20 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_3cy2e"]
-radius = 7.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vvv5a"]
+radius = 5.0
+height = 22.0
 
 [node name="Stone" type="StaticBody2D"]
+y_sort_enabled = true
 collision_layer = 16
+script = SubResource("GDScript_8ucmd")
 
 [node name="Stone_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_5n3gc")
-animation = &"Chalk"
+animation = &"Soapstone"
 
 [node name="Stone_Collsion" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(0, 1)
-shape = SubResource("CircleShape2D_3cy2e")
+position = Vector2(-8.9407e-08, 3)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_vvv5a")
