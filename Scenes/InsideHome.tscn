@@ -3713,6 +3713,9 @@ layer_3/y_sort_origin = 0
 layer_3/z_index = 1
 layer_3/tile_data = PackedInt32Array()
 
+[node name="PlowedFields" type="TileMap" parent="."]
+format = 2
+
 [node name="Decoration" type="TileMap" parent="."]
 y_sort_enabled = true
 tile_set = SubResource("TileSet_bb1pq")

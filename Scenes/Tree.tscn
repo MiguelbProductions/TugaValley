@@ -1,9 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://dyifolmkn04vr"]
+[gd_scene load_steps=19 format=3 uid="uid://dyifolmkn04vr"]
 
 [ext_resource type="Texture2D" uid="uid://dvjw3t0o8d3jm" path="res://Data/Sprites/Nature/alltrees_shadow.png" id="1_l328a"]
 
 [sub_resource type="GDScript" id="GDScript_5qhe8"]
 script/source = "extends StaticBody2D
+
+@export var Break_Durability = 3
 
 @export var Season = \"Spring\"
 @export var Tree_Type = \"Appletree_Default\"
@@ -12,6 +14,7 @@ script/source = "extends StaticBody2D
 @export var ExcludeTrees: Array[String]
 
 @onready var Tree_Anim = $Tree_Anim
+@onready var Tree_CustomAnim = $Tree_CustomAnim
 
 var TreeDicionary = {
 	1: \"Appletree_Default\",
@@ -26,7 +29,6 @@ var TreeDicionary = {
 	10: \"Plumtree_Default\",
 }
 
-
 func _ready():
 	if (RandomTree_of_Season):  
 		Tree_Type = TreeDicionary[randi_range(1, 10)]
@@ -34,6 +36,18 @@ func _ready():
 		while Tree_Type in ExcludeTrees: Tree_Type = TreeDicionary[randi_range(1, 10)]
 	
 	Tree_Anim.play(Tree_Type)
+
+func Break():
+	Break_Durability -= 1
+	
+	if (Break_Durability == 0):
+		Tree_CustomAnim.play(\"Break\")
+		
+		await Tree_CustomAnim.animation_finished
+		
+		queue_free()
+	else:
+		Tree_CustomAnim.play(\"Blink\")
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lbe54"]
@@ -163,6 +177,83 @@ animations = [{
 radius = 2.0
 height = 9.0
 
+[sub_resource type="Animation" id="Animation_2h84n"]
+resource_name = "Break"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Tree_Anim/Blink_Color:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Tree_Anim:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.3, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_ij7jf"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Tree_Anim/Blink_Color:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Tree_Anim:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_gb44n"]
+resource_name = "Blink"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Tree_Anim/Blink_Color:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_u36q7"]
+_data = {
+"Blink": SubResource("Animation_gb44n"),
+"Break": SubResource("Animation_2h84n"),
+"RESET": SubResource("Animation_ij7jf")
+}
+
 [node name="Tree" type="StaticBody2D"]
 y_sort_enabled = true
 collision_layer = 8
@@ -170,11 +261,24 @@ script = SubResource("GDScript_5qhe8")
 ExcludeTrees = Array[String](["Cursedtree_Default", "DeadOld_Default", "Pinetree_Default"])
 
 [node name="Tree_Anim" type="AnimatedSprite2D" parent="."]
+clip_children = 2
 sprite_frames = SubResource("SpriteFrames_0uv1n")
 animation = &"Appletree_Default"
 offset = Vector2(0, -6)
+
+[node name="Blink_Color" type="ColorRect" parent="Tree_Anim"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -20.0
+offset_top = -33.0
+offset_right = 20.0
+offset_bottom = 7.0
 
 [node name="Tree_Collsion" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, 0)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_wrhuo")
+
+[node name="Tree_CustomAnim" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_u36q7")
+}

@@ -1,9 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://cp2508vycjrs6"]
+[gd_scene load_steps=19 format=3 uid="uid://cp2508vycjrs6"]
 
 [ext_resource type="Texture2D" uid="uid://dul1u3rdvumrr" path="res://Data/Sprites/Nature/stone.png" id="1_qjo88"]
 
 [sub_resource type="GDScript" id="GDScript_8ucmd"]
 script/source = "extends StaticBody2D
+
+@export var Break_Durability = 2
 
 @export var Stone_Type = \"Chalk\"
 
@@ -11,6 +13,7 @@ script/source = "extends StaticBody2D
 @export var ExcludeTStones: Array[String]
 
 @onready var Stone_Anim = $Stone_Anim
+@onready var Stone_CustomAnim = $Stone_CustomAnim
 
 var StoneDicionary = {
 	1: \"Chalk\",
@@ -33,6 +36,18 @@ func _ready():
 		while Stone_Type in ExcludeTStones: Stone_Type = StoneDicionary[randi_range(1, 10)]
 	
 	Stone_Anim.play(Stone_Type)
+
+func Break():
+	Break_Durability -= 1
+	
+	if (Break_Durability == 0):
+		Stone_CustomAnim.play(\"Break\")
+		
+		await Stone_CustomAnim.animation_finished
+		
+		queue_free()
+	else:
+		Stone_CustomAnim.play(\"Blink\")
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ufnda"]
@@ -162,16 +177,107 @@ animations = [{
 radius = 5.0
 height = 22.0
 
+[sub_resource type="Animation" id="Animation_xfmcy"]
+resource_name = "Break"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Stone_Anim/Blink_Color:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Stone_Anim:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.3, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_lblwh"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Stone_Anim/Blink_Color:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Stone_Anim:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_14ri5"]
+resource_name = "Blink"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Stone_Anim/Blink_Color:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_kvfw8"]
+_data = {
+"Blink": SubResource("Animation_14ri5"),
+"Break": SubResource("Animation_xfmcy"),
+"RESET": SubResource("Animation_lblwh")
+}
+
 [node name="Stone" type="StaticBody2D"]
 y_sort_enabled = true
 collision_layer = 16
 script = SubResource("GDScript_8ucmd")
 
 [node name="Stone_Anim" type="AnimatedSprite2D" parent="."]
+clip_children = 2
 sprite_frames = SubResource("SpriteFrames_5n3gc")
 animation = &"Soapstone"
+offset = Vector2(0, -6)
+
+[node name="Blink_Color" type="ColorRect" parent="Stone_Anim"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -20.0
+offset_top = -33.0
+offset_right = 20.0
+offset_bottom = 7.0
 
 [node name="Stone_Collsion" type="CollisionShape2D" parent="."]
-position = Vector2(-8.9407e-08, 3)
+position = Vector2(-8.9407e-08, -3)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_vvv5a")
+
+[node name="Stone_CustomAnim" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_kvfw8")
+}

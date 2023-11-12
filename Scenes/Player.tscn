@@ -1,10 +1,13 @@
-[gd_scene load_steps=69 format=3 uid="uid://c5n0iduti2w44"]
+[gd_scene load_steps=93 format=3 uid="uid://c5n0iduti2w44"]
 
+[ext_resource type="Texture2D" uid="uid://bdimt4g6yubvv" path="res://Data/Sprites/Characters/separate/axe/char2_axe.png" id="1_mb8xm"]
 [ext_resource type="Texture2D" uid="uid://c8hoyxjm4x6ln" path="res://Data/Sprites/Characters/separate/idle/char2_idle.png" id="1_ulbpi"]
 [ext_resource type="Texture2D" uid="uid://814fmnsdu7qy" path="res://Data/Sprites/Characters/separate/pickaxe/char2_pickaxe.png" id="2_22kut"]
 [ext_resource type="Texture2D" uid="uid://yfv187hcjloo" path="res://Data/Sprites/Characters/separate/walk/char2_walk.png" id="2_fnx34"]
 [ext_resource type="Texture2D" uid="uid://w000cx3012e7" path="res://Data/Sprites/UI/Hotbar.png" id="3_x3nui"]
 [ext_resource type="Texture2D" uid="uid://bd86jps7yagvd" path="res://Data/Sprites/UI/Tools/Pickaxe.png" id="4_jo3mm"]
+[ext_resource type="Texture2D" uid="uid://dln8l6axy4yxc" path="res://Data/Sprites/UI/ItemSelected_Box.png" id="7_22cal"]
+[ext_resource type="Texture2D" uid="uid://b0773yaoe2blh" path="res://Data/Sprites/UI/Tools/Axe.png" id="7_e0fi2"]
 
 [sub_resource type="GDScript" id="GDScript_y6knj"]
 script/source = "extends CharacterBody2D
@@ -12,35 +15,39 @@ script/source = "extends CharacterBody2D
 @onready var Player_Anim = $Player_Anim
 @onready var Player_RayCast = $Player_RayCast
 
-var ItemSelected_Index = 2
+var ItemSelected_Index = 1
 var Slots = [\"Pickaxe\", \"Axe\", null, null, null, null, null, null, null]
 
 const SPEED = 100
 
+var Using_Tool = false
+
 func _input(event):
-	if (Input.is_action_just_pressed(\"Action\")):
-		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\"):
-			if (Player_RayCast.is_colliding()):
-				if (\"Stone\" in Player_RayCast.get_collider().get_name()):
-					await Player_Anim.animation_finished
-					Player_RayCast.get_collider().queue_free()
-				if (\"Tree\" in Player_RayCast.get_collider().get_name()):
-					await Player_Anim.animation_finished
-					Player_RayCast.get_collider().queue_free()
+	if (Input.is_action_pressed(\"Action\")):
+		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\" or Slots[ItemSelected_Index - 1] == \"Axe\"): Using_Tool = true
+	else:
+		if (Using_Tool): Using_Tool = false
+	
+	if event is InputEventKey:
+		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
+			var number_pressed = event.keycode - KEY_1 + 1
+			
+			ItemSelected_Index = number_pressed
 
 func Move():
-	var directionX = Input.get_axis(\"Left\", \"Right\")
-	var directionY = Input.get_axis(\"Up\", \"Down\")
-	
-	if directionX: velocity.x = directionX
-	else: velocity.x = move_toward(velocity.x, 0, SPEED)
-	
-	if directionY: velocity.y = directionY
-	else: velocity.y = move_toward(velocity.y, 0, SPEED)
-	
-	velocity = velocity.normalized() * SPEED
-	
-	move_and_slide()
+	if (!Using_Tool):
+		var directionX = Input.get_axis(\"Left\", \"Right\")
+		var directionY = Input.get_axis(\"Up\", \"Down\")
+		
+		if directionX: velocity.x = directionX
+		else: velocity.x = move_toward(velocity.x, 0, SPEED)
+		
+		if directionY: velocity.y = directionY
+		else: velocity.y = move_toward(velocity.y, 0, SPEED)
+		
+		velocity = velocity.normalized() * SPEED
+		
+		move_and_slide()
 
 var LastDirection = Vector2.ZERO
 
@@ -51,6 +58,11 @@ func Animate():
 			elif (LastDirection.x == -1): Player_Anim.play(\"Pickaxe_Left\")
 			elif (LastDirection.y == 1): Player_Anim.play(\"Pickaxe_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"Pickaxe_Up\")
+		elif (Slots[ItemSelected_Index - 1] == \"Axe\"):
+			if (LastDirection.x == 1): Player_Anim.play(\"Axe_Right\")
+			elif (LastDirection.x == -1): Player_Anim.play(\"Axe_Left\")
+			elif (LastDirection.y == 1): Player_Anim.play(\"Axe_Down\")
+			elif (LastDirection.y == -1): Player_Anim.play(\"Axe_Up\")
 	else:
 		if (velocity.x > 0): 
 			Player_Anim.play(\"Walk_Right\")
@@ -70,10 +82,108 @@ func Animate():
 			elif (LastDirection.y == 1): Player_Anim.play(\"Idle_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"Idle_Up\")
 
+func Focus_RayCast():
+	if (LastDirection.x == 1): Player_RayCast.target_position = Vector2(10, 0)
+	elif (LastDirection.x == -1): Player_RayCast.target_position = Vector2(-10, 0)
+	elif (LastDirection.y == 1): Player_RayCast.target_position = Vector2(0, 10)
+	elif (LastDirection.y == -1): Player_RayCast.target_position = Vector2(0, -10)
+
 func _physics_process(delta):
 	Move()
 	Animate()
+	Focus_RayCast()
+
+func AnimationLooped():
+	if (\"Pickaxe\" in Player_Anim.animation or \"Axe\" in Player_Anim.animation):
+		print(Player_RayCast.is_colliding())
+		if (Player_RayCast.is_colliding()):
+			if (Slots[ItemSelected_Index - 1] == \"Pickaxe\"):
+				if (\"Stone\" in Player_RayCast.get_collider().get_name()):
+					Player_RayCast.get_collider().Break()
+			elif (Slots[ItemSelected_Index - 1] == \"Axe\"):
+				if (\"Tree\" in Player_RayCast.get_collider().get_name()):
+					Player_RayCast.get_collider().Break()
 "
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tfsju"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dfewu"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iuang"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vc8oh"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f1fme"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_si1gq"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(0, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vk68c"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(32, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ekl3s"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(64, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xfyl8"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(96, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rqug3"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(128, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_piofm"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uptk1"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o5cq0"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(64, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8e14x"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(96, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8tvsl"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(128, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2h2ec"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i2tx7"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s5csc"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(64, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qifs8"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cv2hx"]
+atlas = ExtResource("1_mb8xm")
+region = Rect2(128, 32, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ekvgs"]
 atlas = ExtResource("1_ulbpi")
@@ -319,6 +429,86 @@ region = Rect2(224, 32, 32, 32)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_tfsju")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dfewu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iuang")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vc8oh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f1fme")
+}],
+"loop": true,
+"name": &"Axe_Down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_si1gq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vk68c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ekl3s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xfyl8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rqug3")
+}],
+"loop": true,
+"name": &"Axe_Left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_piofm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uptk1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o5cq0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8e14x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8tvsl")
+}],
+"loop": true,
+"name": &"Axe_Right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2h2ec")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i2tx7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s5csc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qifs8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cv2hx")
+}],
+"loop": true,
+"name": &"Axe_Up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_ekvgs")
 }, {
 "duration": 1.0,
@@ -377,7 +567,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_oq0li")
 }],
-"loop": false,
+"loop": true,
 "name": &"Pickaxe_Down",
 "speed": 5.0
 }, {
@@ -397,7 +587,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_k4g1k")
 }],
-"loop": false,
+"loop": true,
 "name": &"Pickaxe_Left",
 "speed": 5.0
 }, {
@@ -417,7 +607,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4isvq")
 }],
-"loop": false,
+"loop": true,
 "name": &"Pickaxe_Right",
 "speed": 5.0
 }, {
@@ -437,7 +627,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_8gf3v")
 }],
-"loop": false,
+"loop": true,
 "name": &"Pickaxe_Up",
 "speed": 5.0
 }, {
@@ -562,6 +752,19 @@ animations = [{
 radius = 4.0
 height = 8.0
 
+[sub_resource type="GDScript" id="GDScript_13vev"]
+script/source = "extends TextureRect
+
+@onready var ItemSelected_Box = $ItemSelected_Box
+
+func _input(event):
+	if event is InputEventKey:
+		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
+			var number_pressed = event.keycode - KEY_1 + 1
+			
+			ItemSelected_Box.position.x = (number_pressed - 1) * 24 + 9
+"
+
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
 collision_mask = 30
@@ -569,7 +772,7 @@ script = SubResource("GDScript_y6knj")
 
 [node name="Player_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_mbhxc")
-animation = &"Pickaxe_Right"
+animation = &"Idle_Down"
 autoplay = "Idle_Down"
 offset = Vector2(0, -12)
 
@@ -599,16 +802,35 @@ offset_bottom = 40.0
 [node name="HotBar" type="TextureRect" parent="UI/ItensHotbar"]
 layout_mode = 1
 offset_left = -59.0
-offset_top = 49.0
+offset_top = 55.0
 offset_right = 177.0
-offset_bottom = 89.0
+offset_bottom = 95.0
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_x3nui")
+script = SubResource("GDScript_13vev")
 
 [node name="FirstItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
-layout_mode = 0
 offset_left = 14.0
 offset_top = 12.0
 offset_right = 28.0
 offset_bottom = 28.0
 texture = ExtResource("4_jo3mm")
+
+[node name="SecondItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
+offset_left = 40.0
+offset_top = 12.0
+offset_right = 52.0
+offset_bottom = 28.0
+texture = ExtResource("7_e0fi2")
+
+[node name="ItemSelected_Box" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 7.0
+offset_right = 111.0
+offset_bottom = 33.0
+scale = Vector2(0.25, 1)
+texture = ExtResource("7_22cal")
+expand_mode = 1
+
+[connection signal="animation_looped" from="Player_Anim" to="." method="AnimationLooped"]
