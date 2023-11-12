@@ -3682,7 +3682,7 @@ tile_size = Vector2i(1, 1)
 physics_layer_0/collision_layer = 2
 sources/2 = SubResource("TileSetAtlasSource_o6pim")
 
-[node name="InsideHome" type="Node2D"]
+[node name="TestMap" type="Node2D"]
 y_sort_enabled = true
 
 [node name="Floor" type="TileMap" parent="."]

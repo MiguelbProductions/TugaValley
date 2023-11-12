@@ -12,18 +12,21 @@ script/source = "extends CharacterBody2D
 @onready var Player_Anim = $Player_Anim
 @onready var Player_RayCast = $Player_RayCast
 
-var ItemSelected_Index = 1
-var Slots = [\"Pickaxe\", null, null, null, null, null, null, null, null]
+var ItemSelected_Index = 2
+var Slots = [\"Pickaxe\", \"Axe\", null, null, null, null, null, null, null]
 
 const SPEED = 100
 
 func _input(event):
 	if (Input.is_action_just_pressed(\"Action\")):
-		print(\"a\")
-		if (Slots[ItemSelected_Index] == \"Pickaxe\"):
-			print(Player_RayCast.get_collider().get_name())
-			if (\"Stone\" in Player_RayCast.get_collider().get_name()):
-				print(\"x\")
+		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\"):
+			if (Player_RayCast.is_colliding()):
+				if (\"Stone\" in Player_RayCast.get_collider().get_name()):
+					await Player_Anim.animation_finished
+					Player_RayCast.get_collider().queue_free()
+				if (\"Tree\" in Player_RayCast.get_collider().get_name()):
+					await Player_Anim.animation_finished
+					Player_RayCast.get_collider().queue_free()
 
 func Move():
 	var directionX = Input.get_axis(\"Left\", \"Right\")
@@ -42,23 +45,30 @@ func Move():
 var LastDirection = Vector2.ZERO
 
 func Animate():
-	if (velocity.x > 0): 
-		Player_Anim.play(\"Walk_Right\")
-		LastDirection = Vector2(1, 0)
-	elif (velocity.x < 0): 
-		Player_Anim.play(\"Walk_Left\")
-		LastDirection = Vector2(-1, 0)
-	elif (velocity.y > 0): 
-		Player_Anim.play(\"Walk_Down\")
-		LastDirection = Vector2(0, 1)
-	elif (velocity.y < 0): 
-		Player_Anim.play(\"Walk_Up\")
-		LastDirection = Vector2(0, -1)
-	else: 
-		if (LastDirection.x == 1): Player_Anim.play(\"Idle_Right\")
-		elif (LastDirection.x == -1): Player_Anim.play(\"Idle_Left\")
-		elif (LastDirection.y == 1): Player_Anim.play(\"Idle_Down\")
-		elif (LastDirection.y == -1): Player_Anim.play(\"Idle_Up\")
+	if (Input.is_action_pressed(\"Action\")):
+		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\"):
+			if (LastDirection.x == 1): Player_Anim.play(\"Pickaxe_Right\")
+			elif (LastDirection.x == -1): Player_Anim.play(\"Pickaxe_Left\")
+			elif (LastDirection.y == 1): Player_Anim.play(\"Pickaxe_Down\")
+			elif (LastDirection.y == -1): Player_Anim.play(\"Pickaxe_Up\")
+	else:
+		if (velocity.x > 0): 
+			Player_Anim.play(\"Walk_Right\")
+			LastDirection = Vector2(1, 0)
+		elif (velocity.x < 0): 
+			Player_Anim.play(\"Walk_Left\")
+			LastDirection = Vector2(-1, 0)
+		elif (velocity.y > 0): 
+			Player_Anim.play(\"Walk_Down\")
+			LastDirection = Vector2(0, 1)
+		elif (velocity.y < 0): 
+			Player_Anim.play(\"Walk_Up\")
+			LastDirection = Vector2(0, -1)
+		else: 
+			if (LastDirection.x == 1): Player_Anim.play(\"Idle_Right\")
+			elif (LastDirection.x == -1): Player_Anim.play(\"Idle_Left\")
+			elif (LastDirection.y == 1): Player_Anim.play(\"Idle_Down\")
+			elif (LastDirection.y == -1): Player_Anim.play(\"Idle_Up\")
 
 func _physics_process(delta):
 	Move()
@@ -367,7 +377,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_oq0li")
 }],
-"loop": true,
+"loop": false,
 "name": &"Pickaxe_Down",
 "speed": 5.0
 }, {
@@ -387,7 +397,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_k4g1k")
 }],
-"loop": true,
+"loop": false,
 "name": &"Pickaxe_Left",
 "speed": 5.0
 }, {
@@ -407,7 +417,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4isvq")
 }],
-"loop": true,
+"loop": false,
 "name": &"Pickaxe_Right",
 "speed": 5.0
 }, {
@@ -427,7 +437,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_8gf3v")
 }],
-"loop": true,
+"loop": false,
 "name": &"Pickaxe_Up",
 "speed": 5.0
 }, {
@@ -559,7 +569,7 @@ script = SubResource("GDScript_y6knj")
 
 [node name="Player_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_mbhxc")
-animation = &"Idle_Down"
+animation = &"Pickaxe_Right"
 autoplay = "Idle_Down"
 offset = Vector2(0, -12)
 
