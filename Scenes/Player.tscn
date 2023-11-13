@@ -1,4 +1,4 @@
-[gd_scene load_steps=115 format=3 uid="uid://c5n0iduti2w44"]
+[gd_scene load_steps=134 format=3 uid="uid://c5n0iduti2w44"]
 
 [ext_resource type="Texture2D" uid="uid://bdimt4g6yubvv" path="res://Data/Sprites/Characters/separate/axe/char2_axe.png" id="1_mb8xm"]
 [ext_resource type="Texture2D" uid="uid://c8hoyxjm4x6ln" path="res://Data/Sprites/Characters/separate/idle/char2_idle.png" id="1_ulbpi"]
@@ -7,9 +7,19 @@
 [ext_resource type="Texture2D" uid="uid://caw5uoeyl8gxr" path="res://Data/Sprites/Characters/separate/hoe/char2_hoe.png" id="2_im3hh"]
 [ext_resource type="Texture2D" uid="uid://w000cx3012e7" path="res://Data/Sprites/UI/Hotbar.png" id="3_x3nui"]
 [ext_resource type="Texture2D" uid="uid://bd86jps7yagvd" path="res://Data/Sprites/UI/Tools/Pickaxe.png" id="4_jo3mm"]
+[ext_resource type="Texture2D" uid="uid://rsobvavbtimk" path="res://Data/Sprites/Characters/separate/water/char2_water.png" id="6_jpdul"]
 [ext_resource type="Texture2D" uid="uid://dln8l6axy4yxc" path="res://Data/Sprites/UI/ItemSelected_Box.png" id="7_22cal"]
 [ext_resource type="Texture2D" uid="uid://b0773yaoe2blh" path="res://Data/Sprites/UI/Tools/Axe.png" id="7_e0fi2"]
 [ext_resource type="Texture2D" uid="uid://d3mvf006ivqrf" path="res://Data/Sprites/UI/Tools/Hoe.png" id="8_n1aj1"]
+[ext_resource type="Texture2D" uid="uid://chgpchllaswqy" path="res://Data/Sprites/UI/Tools/WaterCan.png" id="10_sr7e6"]
+[ext_resource type="Texture2D" uid="uid://cy2xhhh0oo30x" path="res://Data/Sprites/UI/Pages/Bag_Page.png" id="13_amk50"]
+[ext_resource type="Texture2D" uid="uid://cdxvw1ryw06ft" path="res://Data/Sprites/UI/Pages/CraftingStation_Page.png" id="14_amsyl"]
+[ext_resource type="Texture2D" uid="uid://lvkvkbxlet05" path="res://Data/Sprites/UI/Pages/Npcsfriendship_Page.png" id="15_hf6d6"]
+[ext_resource type="Texture2D" uid="uid://boagcy43plsur" path="res://Data/Sprites/UI/Pages/Animals_Page.png" id="16_3chyi"]
+[ext_resource type="Texture2D" uid="uid://bjpejd0qyw5dw" path="res://Data/Sprites/UI/Pages/Map_Page.png" id="17_rtlfg"]
+[ext_resource type="Texture2D" uid="uid://cen5dg8fdkhai" path="res://Data/Sprites/UI/Pages/StarInfos_Page.png" id="18_b5p10"]
+[ext_resource type="Texture2D" uid="uid://bvufvglu83lp0" path="res://Data/Sprites/UI/Pages/Config_Page.png" id="19_7hs3d"]
+[ext_resource type="Texture2D" uid="uid://5mqxl0apcj7e" path="res://Data/Sprites/UI/Pages/Exit_Page.png" id="20_jysmk"]
 
 [sub_resource type="GDScript" id="GDScript_y6knj"]
 script/source = "extends CharacterBody2D
@@ -18,7 +28,7 @@ script/source = "extends CharacterBody2D
 @onready var Player_RayCast = $Player_RayCast
 
 var ItemSelected_Index = 1
-var Slots = [\"Pickaxe\", \"Axe\", \"Hoe\", null, null, null, null, null, null]
+var Slots = [\"Pickaxe\", \"Axe\", \"Hoe\", \"WaterCan\", \"Seed\", null, null, null, null]
 
 const SPEED = 100
 
@@ -70,6 +80,11 @@ func Animate():
 			elif (LastDirection.x == -1): Player_Anim.play(\"Hoe_Left\")
 			elif (LastDirection.y == 1): Player_Anim.play(\"Hoe_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"Hoe_Up\")
+		elif (Slots[ItemSelected_Index - 1] == \"WaterCan\"):
+			if (LastDirection.x == 1): Player_Anim.play(\"WaterCan_Right\")
+			elif (LastDirection.x == -1): Player_Anim.play(\"WaterCan_Left\")
+			elif (LastDirection.y == 1): Player_Anim.play(\"WaterCan_Down\")
+			elif (LastDirection.y == -1): Player_Anim.play(\"WaterCan_Up\")
 	else:
 		if (velocity.x > 0): 
 			Player_Anim.play(\"Walk_Right\")
@@ -118,10 +133,18 @@ func AnimationLooped():
 			var TileCords_PlowedFields = PlowedFields.local_to_map(Vector2(position.x, position.y))
 			
 			var Tile_FloorAtlasPos = Floor.get_cell_atlas_coords(0, TileCords_Floor)
-			var Tile_PlowedFieldsAtlasPos = PlowedFields.get_cell_atlas_coords(0, TileCords_Floor)
+			var Tile_PlowedFieldsAtlasPos = PlowedFields.get_cell_atlas_coords(0, TileCords_PlowedFields)
 			
 			if (Tile_FloorAtlasPos == Vector2i(1, 1) and Tile_PlowedFieldsAtlasPos == Vector2i(-1, -1)): 
 				PlowedFields.set_cell(0, TileCords_PlowedFields, 0, Vector2i(randi_range(0, 3),0)) 
+		elif (Slots[ItemSelected_Index - 1] == \"WaterCan\"):
+			var PlowedFields = get_tree().root.get_node(\"TestMap/PlowedFields\")
+			var TileCords_PlowedFields = PlowedFields.local_to_map(Vector2(position.x, position.y))
+			var Tile_PlowedFieldsAtlasPos = PlowedFields.get_cell_atlas_coords(0, TileCords_PlowedFields)
+			
+			if (Tile_PlowedFieldsAtlasPos == Vector2i(-1, -1)): 
+				PlowedFields.set_cell(0, TileCords_PlowedFields, 0, Vector2i(randi_range(0, 3),0)) 
+
 
 "
 
@@ -525,6 +548,38 @@ region = Rect2(192, 32, 32, 32)
 atlas = ExtResource("2_fnx34")
 region = Rect2(224, 32, 32, 32)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_lpnww"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yv3n7"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ybar2"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(0, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mp6ub"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(32, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iyaio"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ik37x"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gacp6"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ydipp"]
+atlas = ExtResource("6_jpdul")
+region = Rect2(32, 32, 32, 32)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_mbhxc"]
 animations = [{
 "frames": [{
@@ -926,6 +981,50 @@ animations = [{
 "loop": true,
 "name": &"Walk_Up",
 "speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lpnww")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yv3n7")
+}],
+"loop": true,
+"name": &"WaterCan_Down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ybar2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mp6ub")
+}],
+"loop": true,
+"name": &"WaterCan_Left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iyaio")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ik37x")
+}],
+"loop": true,
+"name": &"WaterCan_Right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gacp6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ydipp")
+}],
+"loop": true,
+"name": &"WaterCan_Up",
+"speed": 5.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dqmir"]
@@ -945,6 +1044,67 @@ func _input(event):
 			ItemSelected_Box.position.x = (number_pressed - 1) * 24 + 9
 "
 
+[sub_resource type="GDScript" id="GDScript_4iekd"]
+script/source = "extends Control
+
+@onready var Bag_Page = $Bag_Page
+@onready var CraftingStation_Page = $CraftingStation_Page
+@onready var Npcsfriendship_Page = $Npcsfriendship_Page
+@onready var Animals_Page = $Animals_Page
+@onready var Map_Page = $Map_Page
+@onready var StarInfos_Page = $StarInfos_Page
+@onready var Config_Page = $Config_Page
+@onready var Exit_Page = $Exit_Page
+
+var Pages: Dictionary
+
+func _ready():
+	Pages = {
+		1: Bag_Page,
+		2: CraftingStation_Page,
+		3: Npcsfriendship_Page,
+		4: Animals_Page,
+		5: Map_Page,
+		6: StarInfos_Page,
+		7: Config_Page,
+		8: Exit_Page
+	}
+
+func _input(event):
+	if (Input.is_action_just_pressed(\"OpenInventory\")): visible = !visible
+
+func Select_BagPage():
+	Select_Page(1)
+
+func Select_CraftingStationPage():
+	Select_Page(2)
+
+func Select_NpcsfriendshipPage():
+	Select_Page(3)
+
+func Select_AnimalsPage():
+	Select_Page(4)
+
+func Select_MapPage():
+	Select_Page(5)
+
+func Select_StarInfosPage():
+	Select_Page(6)
+
+func Select_ConfigPage():
+	Select_Page(7)
+
+func Select_ExitPage():
+	Select_Page(8)
+
+func Select_Page(PageSelected_Index):
+	for Page_Index in Pages.keys():
+		if (Page_Index != PageSelected_Index): Pages[Page_Index].visible = false
+		else: Pages[Page_Index].visible = true
+			
+		
+"
+
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
 collision_mask = 30
@@ -952,7 +1112,7 @@ script = SubResource("GDScript_y6knj")
 
 [node name="Player_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_mbhxc")
-animation = &"Hoe_Right"
+animation = &"WaterCan_Right"
 autoplay = "Idle_Down"
 offset = Vector2(0, -12)
 
@@ -1016,6 +1176,15 @@ offset_bottom = 25.0
 scale = Vector2(1.12, 1.12)
 texture = ExtResource("8_n1aj1")
 
+[node name="FourthItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
+layout_mode = 0
+offset_left = 87.0
+offset_top = 16.0
+offset_right = 100.0
+offset_bottom = 24.0
+scale = Vector2(1.12, 1.12)
+texture = ExtResource("10_sr7e6")
+
 [node name="ItemSelected_Box" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
 layout_mode = 0
 offset_left = 9.0
@@ -1026,4 +1195,141 @@ scale = Vector2(0.25, 1)
 texture = ExtResource("7_22cal")
 expand_mode = 1
 
+[node name="Inventory" type="Control" parent="UI"]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.75, 0.75)
+script = SubResource("GDScript_4iekd")
+
+[node name="Bag_Page" type="TextureRect" parent="UI/Inventory"]
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("13_amk50")
+
+[node name="CraftingStation_Page" type="TextureRect" parent="UI/Inventory"]
+visible = false
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("14_amsyl")
+
+[node name="Npcsfriendship_Page" type="TextureRect" parent="UI/Inventory"]
+visible = false
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("15_hf6d6")
+
+[node name="Animals_Page" type="TextureRect" parent="UI/Inventory"]
+visible = false
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("16_3chyi")
+
+[node name="Map_Page" type="TextureRect" parent="UI/Inventory"]
+visible = false
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("17_rtlfg")
+
+[node name="StarInfos_Page" type="TextureRect" parent="UI/Inventory"]
+visible = false
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("18_b5p10")
+
+[node name="Config_Page" type="TextureRect" parent="UI/Inventory"]
+visible = false
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("19_7hs3d")
+
+[node name="Exit_Page" type="TextureRect" parent="UI/Inventory"]
+visible = false
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("20_jysmk")
+
+[node name="Bag_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -31.5
+offset_top = -80.0
+offset_right = -11.5
+offset_bottom = -52.0
+
+[node name="CraftingStation_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -10.5
+offset_top = -80.0
+offset_right = 8.5
+offset_bottom = -52.0
+
+[node name="Npcsfriendship_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 10.5
+offset_top = -80.0
+offset_right = 29.5
+offset_bottom = -52.0
+
+[node name="Animals_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 31.5
+offset_top = -80.0
+offset_right = 50.5
+offset_bottom = -52.0
+
+[node name="Map_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 52.5
+offset_top = -80.0
+offset_right = 71.5
+offset_bottom = -52.0
+
+[node name="StarInfos_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 73.5
+offset_top = -80.0
+offset_right = 92.5
+offset_bottom = -52.0
+
+[node name="Config_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 94.5
+offset_top = -80.0
+offset_right = 113.5
+offset_bottom = -52.0
+
+[node name="Exit_Btn" type="Button" parent="UI/Inventory"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 115.5
+offset_top = -80.0
+offset_right = 134.5
+offset_bottom = -52.0
+
 [connection signal="animation_looped" from="Player_Anim" to="." method="AnimationLooped"]
+[connection signal="pressed" from="UI/Inventory/Bag_Btn" to="UI/Inventory" method="Select_BagPage"]
+[connection signal="pressed" from="UI/Inventory/CraftingStation_Btn" to="UI/Inventory" method="Select_CraftingStationPage"]
+[connection signal="pressed" from="UI/Inventory/Npcsfriendship_Btn" to="UI/Inventory" method="Select_NpcsfriendshipPage"]
+[connection signal="pressed" from="UI/Inventory/Animals_Btn" to="UI/Inventory" method="Select_AnimalsPage"]
+[connection signal="pressed" from="UI/Inventory/Map_Btn" to="UI/Inventory" method="Select_MapPage"]
+[connection signal="pressed" from="UI/Inventory/StarInfos_Btn" to="UI/Inventory" method="Select_StarInfosPage"]
+[connection signal="pressed" from="UI/Inventory/Config_Btn" to="UI/Inventory" method="Select_ConfigPage"]
+[connection signal="pressed" from="UI/Inventory/Exit_Btn" to="UI/Inventory" method="Select_ExitPage"]
