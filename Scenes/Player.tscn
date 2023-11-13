@@ -1,13 +1,15 @@
-[gd_scene load_steps=93 format=3 uid="uid://c5n0iduti2w44"]
+[gd_scene load_steps=115 format=3 uid="uid://c5n0iduti2w44"]
 
 [ext_resource type="Texture2D" uid="uid://bdimt4g6yubvv" path="res://Data/Sprites/Characters/separate/axe/char2_axe.png" id="1_mb8xm"]
 [ext_resource type="Texture2D" uid="uid://c8hoyxjm4x6ln" path="res://Data/Sprites/Characters/separate/idle/char2_idle.png" id="1_ulbpi"]
 [ext_resource type="Texture2D" uid="uid://814fmnsdu7qy" path="res://Data/Sprites/Characters/separate/pickaxe/char2_pickaxe.png" id="2_22kut"]
 [ext_resource type="Texture2D" uid="uid://yfv187hcjloo" path="res://Data/Sprites/Characters/separate/walk/char2_walk.png" id="2_fnx34"]
+[ext_resource type="Texture2D" uid="uid://caw5uoeyl8gxr" path="res://Data/Sprites/Characters/separate/hoe/char2_hoe.png" id="2_im3hh"]
 [ext_resource type="Texture2D" uid="uid://w000cx3012e7" path="res://Data/Sprites/UI/Hotbar.png" id="3_x3nui"]
 [ext_resource type="Texture2D" uid="uid://bd86jps7yagvd" path="res://Data/Sprites/UI/Tools/Pickaxe.png" id="4_jo3mm"]
 [ext_resource type="Texture2D" uid="uid://dln8l6axy4yxc" path="res://Data/Sprites/UI/ItemSelected_Box.png" id="7_22cal"]
 [ext_resource type="Texture2D" uid="uid://b0773yaoe2blh" path="res://Data/Sprites/UI/Tools/Axe.png" id="7_e0fi2"]
+[ext_resource type="Texture2D" uid="uid://d3mvf006ivqrf" path="res://Data/Sprites/UI/Tools/Hoe.png" id="8_n1aj1"]
 
 [sub_resource type="GDScript" id="GDScript_y6knj"]
 script/source = "extends CharacterBody2D
@@ -16,7 +18,7 @@ script/source = "extends CharacterBody2D
 @onready var Player_RayCast = $Player_RayCast
 
 var ItemSelected_Index = 1
-var Slots = [\"Pickaxe\", \"Axe\", null, null, null, null, null, null, null]
+var Slots = [\"Pickaxe\", \"Axe\", \"Hoe\", null, null, null, null, null, null]
 
 const SPEED = 100
 
@@ -24,7 +26,7 @@ var Using_Tool = false
 
 func _input(event):
 	if (Input.is_action_pressed(\"Action\")):
-		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\" or Slots[ItemSelected_Index - 1] == \"Axe\"): Using_Tool = true
+		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\" or Slots[ItemSelected_Index - 1] == \"Axe\" or Slots[ItemSelected_Index - 1] == \"Hoe\"): Using_Tool = true
 	else:
 		if (Using_Tool): Using_Tool = false
 	
@@ -63,6 +65,11 @@ func Animate():
 			elif (LastDirection.x == -1): Player_Anim.play(\"Axe_Left\")
 			elif (LastDirection.y == 1): Player_Anim.play(\"Axe_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"Axe_Up\")
+		elif (Slots[ItemSelected_Index - 1] == \"Hoe\"):
+			if (LastDirection.x == 1): Player_Anim.play(\"Hoe_Right\")
+			elif (LastDirection.x == -1): Player_Anim.play(\"Hoe_Left\")
+			elif (LastDirection.y == 1): Player_Anim.play(\"Hoe_Down\")
+			elif (LastDirection.y == -1): Player_Anim.play(\"Hoe_Up\")
 	else:
 		if (velocity.x > 0): 
 			Player_Anim.play(\"Walk_Right\")
@@ -94,8 +101,7 @@ func _physics_process(delta):
 	Focus_RayCast()
 
 func AnimationLooped():
-	if (\"Pickaxe\" in Player_Anim.animation or \"Axe\" in Player_Anim.animation):
-		print(Player_RayCast.is_colliding())
+	if (\"Pickaxe\" in Player_Anim.animation or \"Axe\" in Player_Anim.animation or \"Hoe\" in Player_Anim.animation):
 		if (Player_RayCast.is_colliding()):
 			if (Slots[ItemSelected_Index - 1] == \"Pickaxe\"):
 				if (\"Stone\" in Player_RayCast.get_collider().get_name()):
@@ -103,6 +109,20 @@ func AnimationLooped():
 			elif (Slots[ItemSelected_Index - 1] == \"Axe\"):
 				if (\"Tree\" in Player_RayCast.get_collider().get_name()):
 					Player_RayCast.get_collider().Break()
+					
+		if (Slots[ItemSelected_Index - 1] == \"Hoe\"):
+			var Floor = get_tree().root.get_node(\"TestMap/Floor\")
+			var PlowedFields = get_tree().root.get_node(\"TestMap/PlowedFields\")
+			
+			var TileCords_Floor = Floor.local_to_map(Vector2(position.x, position.y))
+			var TileCords_PlowedFields = PlowedFields.local_to_map(Vector2(position.x, position.y))
+			
+			var Tile_FloorAtlasPos = Floor.get_cell_atlas_coords(0, TileCords_Floor)
+			var Tile_PlowedFieldsAtlasPos = PlowedFields.get_cell_atlas_coords(0, TileCords_Floor)
+			
+			if (Tile_FloorAtlasPos == Vector2i(1, 1) and Tile_PlowedFieldsAtlasPos == Vector2i(-1, -1)): 
+				PlowedFields.set_cell(0, TileCords_PlowedFields, 0, Vector2i(randi_range(0, 3),0)) 
+
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tfsju"]
@@ -183,6 +203,86 @@ region = Rect2(96, 32, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cv2hx"]
 atlas = ExtResource("1_mb8xm")
+region = Rect2(128, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vtd4s"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mylbi"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7hwyb"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pbgfm"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ur7fm"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4obvf"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(0, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_66dol"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(32, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8daqa"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(64, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jt2ym"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(96, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kkwmi"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(128, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y2x47"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mro2j"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7h7kp"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(64, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ayt5x"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(96, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ma3wn"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(128, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f075o"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lmjqh"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nfbm2"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(64, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h7tr6"]
+atlas = ExtResource("2_im3hh")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u26i4"]
+atlas = ExtResource("2_im3hh")
 region = Rect2(128, 32, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ekvgs"]
@@ -509,6 +609,86 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_vtd4s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mylbi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7hwyb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pbgfm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ur7fm")
+}],
+"loop": true,
+"name": &"Hoe_Down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4obvf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_66dol")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8daqa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jt2ym")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kkwmi")
+}],
+"loop": true,
+"name": &"Hoe_Left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2x47")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mro2j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7h7kp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ayt5x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ma3wn")
+}],
+"loop": true,
+"name": &"Hoe_Right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f075o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lmjqh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nfbm2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h7tr6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u26i4")
+}],
+"loop": true,
+"name": &"Hoe_Up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_ekvgs")
 }, {
 "duration": 1.0,
@@ -772,7 +952,7 @@ script = SubResource("GDScript_y6knj")
 
 [node name="Player_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_mbhxc")
-animation = &"Idle_Down"
+animation = &"Hoe_Right"
 autoplay = "Idle_Down"
 offset = Vector2(0, -12)
 
@@ -810,18 +990,31 @@ texture = ExtResource("3_x3nui")
 script = SubResource("GDScript_13vev")
 
 [node name="FirstItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
+layout_mode = 0
 offset_left = 14.0
 offset_top = 12.0
 offset_right = 28.0
-offset_bottom = 28.0
+offset_bottom = 25.0
+scale = Vector2(1.12, 1.12)
 texture = ExtResource("4_jo3mm")
 
 [node name="SecondItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
-offset_left = 40.0
-offset_top = 12.0
-offset_right = 52.0
-offset_bottom = 28.0
+layout_mode = 0
+offset_left = 41.0
+offset_top = 13.0
+offset_right = 50.0
+offset_bottom = 25.0
+scale = Vector2(1.12, 1.12)
 texture = ExtResource("7_e0fi2")
+
+[node name="ThirdItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
+layout_mode = 0
+offset_left = 63.0
+offset_top = 14.0
+offset_right = 76.0
+offset_bottom = 25.0
+scale = Vector2(1.12, 1.12)
+texture = ExtResource("8_n1aj1")
 
 [node name="ItemSelected_Box" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
 layout_mode = 0
