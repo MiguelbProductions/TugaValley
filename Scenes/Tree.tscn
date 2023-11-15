@@ -39,7 +39,7 @@ func Break():
 		var CollectableItemX = CollectableItem.instantiate()
 		
 		CollectableItemX.position = DropItems_CenterPos.global_position + Vector2(randi_range(-4, 4), randi_range(-4, 4))
-		CollectableItemX.get_node(\"CollectableItem_Texture\").Texture = \"res://Data/Sprites/Nature/Log.png\"
+		CollectableItemX.get_node(\"CollectableItem_Texture\").texture.resource_path = \"res://Data/Sprites/Nature/Log.png\"
 		
 		get_tree().root.get_node(Game.CurrentScene).add_child(CollectableItemX)
 		

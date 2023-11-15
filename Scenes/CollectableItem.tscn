@@ -1,18 +1,57 @@
-[gd_scene load_steps=5 format=3 uid="uid://bpagdebs8p5a3"]
+[gd_scene load_steps=6 format=3 uid="uid://bpagdebs8p5a3"]
 
 [ext_resource type="Texture2D" uid="uid://ck724tcq31ate" path="res://Data/Sprites/Nature/Log.png" id="1_5mfae"]
 
 [sub_resource type="GDScript" id="GDScript_24e5x"]
-script/source = "extends StaticBody2D
+script/source = "extends CharacterBody2D
 
+const SPEED = 50
+
+var GoToPlayer = false
+var Player
+
+func Player_GetItem(body):
+	if (\"Player\" in body.name):
+		if (!Player): Player = body
+		
+		GoToPlayer = true
+
+func Item_InPlayer(body):
+	if (\"Player\" in body.name):
+		if (!Player): Player = body
+		
+		Player.Add_Item(\"Log\")
+		
+		queue_free()
+
+func _process(delta):
+	if (GoToPlayer):
+		var direction = Player.position - position
+		
+		var angle = atan2(direction.y, direction.x)
+		angle = rad_to_deg(angle)
+		
+		var velocity_vector = Vector2(cos(deg_to_rad(angle)), sin(deg_to_rad(angle))).normalized()
+		
+		velocity = velocity_vector * SPEED
+		
+		move_and_slide()
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.y = move_toward(velocity.y, 0, SPEED)
 "
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_i1vq7"]
+radius = 6.66667
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_a0f2u"]
 radius = 35.5106
 
-[node name="CollectableItem" type="StaticBody2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_ataas"]
+radius = 8.88889
+
+[node name="CollectableItem" type="CharacterBody2D"]
+scale = Vector2(0.45, 0.45)
 script = SubResource("GDScript_24e5x")
 
 [node name="CollectableItem_Texture" type="Sprite2D" parent="."]
@@ -22,6 +61,16 @@ texture = ExtResource("1_5mfae")
 shape = SubResource("CircleShape2D_i1vq7")
 
 [node name="CollectRangeArea" type="Area2D" parent="."]
+collision_layer = 64
 
 [node name="CollectRangeArea_Collision" type="CollisionShape2D" parent="CollectRangeArea"]
 shape = SubResource("CircleShape2D_a0f2u")
+
+[node name="InPlayerArea" type="Area2D" parent="."]
+collision_layer = 64
+
+[node name="InPlayerArea_Collision" type="CollisionShape2D" parent="InPlayerArea"]
+shape = SubResource("CircleShape2D_ataas")
+
+[connection signal="body_entered" from="CollectRangeArea" to="." method="Player_GetItem"]
+[connection signal="body_entered" from="InPlayerArea" to="." method="Item_InPlayer"]

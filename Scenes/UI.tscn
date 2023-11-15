@@ -1,6 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://dopkcl4vcrbnw"]
+[gd_scene load_steps=15 format=3 uid="uid://dopkcl4vcrbnw"]
 
 [ext_resource type="Texture2D" uid="uid://w000cx3012e7" path="res://Data/Sprites/UI/Hotbar.png" id="1_2vu7w"]
+[ext_resource type="PackedScene" uid="uid://dlputmld4smt1" path="res://Scenes/ItemPainel.tscn" id="3_1qqkc"]
 [ext_resource type="Texture2D" uid="uid://dln8l6axy4yxc" path="res://Data/Sprites/UI/ItemSelected_Box.png" id="6_4hc5x"]
 [ext_resource type="Texture2D" uid="uid://cy2xhhh0oo30x" path="res://Data/Sprites/UI/Pages/Bag_Page.png" id="7_6j3qj"]
 [ext_resource type="Texture2D" uid="uid://cdxvw1ryw06ft" path="res://Data/Sprites/UI/Pages/CraftingStation_Page.png" id="8_2lunp"]
@@ -20,13 +21,7 @@ script/source = "extends TextureRect
 @onready var HotBar_GridContainer = $HotBar_GridContainer
 
 func _ready():
-	var Num_ItemSlot = 0
-	
-	for ItemSlot in HotBar_GridContainer.get_children():
-		if (Player.SelfInventory.Items[Num_ItemSlot].Item != null):
-			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].Item.texture
-		
-		Num_ItemSlot += 1
+	Update_Inventory()
 
 func _input(event):
 	if event is InputEventKey:
@@ -34,6 +29,21 @@ func _input(event):
 			var number_pressed = event.keycode - KEY_1 + 1
 			
 			ItemSelected_Box.position.x = (number_pressed - 1) * 24 + 9
+
+func Update_Inventory():
+	var Num_ItemSlot = 0
+	
+	for ItemSlot in HotBar_GridContainer.get_children():
+		if (Player.SelfInventory.Items[Num_ItemSlot].Item != null):
+			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].Item.texture
+			
+			if (Player.SelfInventory.Items[Num_ItemSlot].Amount > 1):
+				ItemSlot.get_node(\"Amount\").text = str(Player.SelfInventory.Items[Num_ItemSlot].Amount)
+				ItemSlot.get_node(\"Amount\").visible = true
+			else:
+				ItemSlot.get_node(\"Amount\").visible = false
+		
+		Num_ItemSlot += 1
 "
 
 [sub_resource type="GDScript" id="GDScript_4iekd"]
@@ -104,11 +114,19 @@ script/source = "extends TextureRect
 @onready var Bag_GridContainer = $Bag_GridContainer
 
 func _ready():
+	Update_Inventory()
+
+func Update_Inventory():
 	var Num_ItemSlot = 9
 	
 	for ItemSlot in Bag_GridContainer.get_children():
 		if (Player.SelfInventory.Items[Num_ItemSlot].Item != null):
 			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].Item.texture
+			
+			if (Player.SelfInventory.Items[Num_ItemSlot].Amount > 1 ):
+				ItemSlot.get_node(\"Amount\").text = str(Player.SelfInventory.Items[Num_ItemSlot].Amount)
+			else:
+				ItemSlot.get_node(\"Amount\").visible = false
 		
 		Num_ItemSlot += 1
 "
@@ -154,86 +172,32 @@ offset_right = 227.0
 offset_bottom = 32.0
 columns = 9
 
-[node name="Painel_Item1" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item1"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item2" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel2" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item2"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item3" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel3" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item3"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item4" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel4" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item4"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item5" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel5" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item5"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item6" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel6" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item6"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item7" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel7" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item7"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item8" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel8" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item8"]
-position = Vector2(8.33333, 9.16667)
-
-[node name="Painel_Item9" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
-self_modulate = Color(1, 1, 1, 0)
+[node name="ItemPainel9" parent="ItensHotbar/HotBar/HotBar_GridContainer" instance=ExtResource("3_1qqkc")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item9"]
-position = Vector2(8.33333, 9.16667)
 
 [node name="Inventory" type="Control" parent="."]
 visible = false

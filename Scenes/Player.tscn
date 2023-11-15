@@ -18,7 +18,10 @@ script/source = "extends CharacterBody2D
 @onready var Player_CustomAnim = $Player_CustomAnim
 @onready var Player_RayCast = $Player_RayCast
 
+@onready var HotBar = $UI/ItensHotbar/HotBar
 @onready var HotBar_GridContainer = $UI/ItensHotbar/HotBar/HotBar_GridContainer
+
+@onready var BagPage = $UI/Inventory/Bag_Page
 
 @onready var Hoe_Pos = $Hoe_Pos
 
@@ -181,10 +184,28 @@ func Focus_RayCast():
 		if (LastDirection.y == 1): Player_RayCast.target_position = Vector2(0, 10)
 		elif (LastDirection.y == -1): Player_RayCast.target_position = Vector2(0, -10)
 
-func _physics_process(delta):
-	Move()
-	Animate()
-	Focus_RayCast()
+func Add_Item(ItemName):
+	var Item = load(\"res://Inventory/Items/\" + ItemName + \".tres\")
+	
+	var AddedAmount = false
+	
+	for Slot in SelfInventory.Items:
+		if (Slot.Item != null and Slot.Item.name == ItemName and Slot.Amount < 99):
+			Slot.Amount += 1
+			
+			AddedAmount = true
+			
+			break
+	
+	if (!AddedAmount):
+		for Slot in SelfInventory.Items:
+			if (Slot.Item == null):
+				Slot.Item = Item
+				
+				break
+	
+	HotBar.Update_Inventory()
+	BagPage.Update_Inventory()
 
 func AnimationLooped():
 	if (\"Pickaxe\" in Player_Anim.animation or \"Axe\" in Player_Anim.animation or \"Hoe\" in Player_Anim.animation):
@@ -218,6 +239,11 @@ func AnimationLooped():
 			
 			if (Tile_PlantationsAtlasPos == Vector2i(-1, -1)): 
 				Plantations.set_cell(0, TileCords_Plantations, 0, Vector2i(randi_range(0, 3),0)) 
+
+func _physics_process(delta):
+	Move()
+	Animate()
+	Focus_RayCast()
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tfsju"]
@@ -1621,7 +1647,7 @@ _data = {
 
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
-collision_mask = 62
+collision_mask = 126
 script = SubResource("GDScript_y6knj")
 SelfInventory = ExtResource("1_bkf7a")
 

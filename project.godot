@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Tuga Valley"
+config/tags=PackedStringArray("pap")
 run/main_scene="res://Scenes/Map/HouseTerrain.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 config/icon="res://Icon.png"
@@ -74,6 +75,7 @@ OpenInventory={
 2d_physics/layer_4="Trees"
 2d_physics/layer_5="Stones"
 2d_physics/layer_6="Enemies"
+2d_physics/layer_7="Collectable Itens"
 
 [rendering]
 
