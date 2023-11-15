@@ -60,3 +60,4 @@ var StoneDurability = {
 
 var CurrentScene = "House"
 var Day = 1
+var HouseTerrain_Generated = false
