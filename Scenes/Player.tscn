@@ -1,50 +1,53 @@
-[gd_scene load_steps=134 format=3 uid="uid://c5n0iduti2w44"]
+[gd_scene load_steps=160 format=3 uid="uid://c5n0iduti2w44"]
 
+[ext_resource type="Resource" uid="uid://dqf74s4k58ix3" path="res://Inventory/PlayerInventory.tres" id="1_bkf7a"]
 [ext_resource type="Texture2D" uid="uid://bdimt4g6yubvv" path="res://Data/Sprites/Characters/separate/axe/char2_axe.png" id="1_mb8xm"]
 [ext_resource type="Texture2D" uid="uid://c8hoyxjm4x6ln" path="res://Data/Sprites/Characters/separate/idle/char2_idle.png" id="1_ulbpi"]
 [ext_resource type="Texture2D" uid="uid://814fmnsdu7qy" path="res://Data/Sprites/Characters/separate/pickaxe/char2_pickaxe.png" id="2_22kut"]
 [ext_resource type="Texture2D" uid="uid://yfv187hcjloo" path="res://Data/Sprites/Characters/separate/walk/char2_walk.png" id="2_fnx34"]
 [ext_resource type="Texture2D" uid="uid://caw5uoeyl8gxr" path="res://Data/Sprites/Characters/separate/hoe/char2_hoe.png" id="2_im3hh"]
-[ext_resource type="Texture2D" uid="uid://w000cx3012e7" path="res://Data/Sprites/UI/Hotbar.png" id="3_x3nui"]
-[ext_resource type="Texture2D" uid="uid://bd86jps7yagvd" path="res://Data/Sprites/UI/Tools/Pickaxe.png" id="4_jo3mm"]
+[ext_resource type="Texture2D" uid="uid://ccbej7f58l38l" path="res://Data/Sprites/Characters/separate/carry/char2_carry.png" id="3_rj54c"]
 [ext_resource type="Texture2D" uid="uid://rsobvavbtimk" path="res://Data/Sprites/Characters/separate/water/char2_water.png" id="6_jpdul"]
-[ext_resource type="Texture2D" uid="uid://dln8l6axy4yxc" path="res://Data/Sprites/UI/ItemSelected_Box.png" id="7_22cal"]
-[ext_resource type="Texture2D" uid="uid://b0773yaoe2blh" path="res://Data/Sprites/UI/Tools/Axe.png" id="7_e0fi2"]
-[ext_resource type="Texture2D" uid="uid://d3mvf006ivqrf" path="res://Data/Sprites/UI/Tools/Hoe.png" id="8_n1aj1"]
-[ext_resource type="Texture2D" uid="uid://chgpchllaswqy" path="res://Data/Sprites/UI/Tools/WaterCan.png" id="10_sr7e6"]
-[ext_resource type="Texture2D" uid="uid://cy2xhhh0oo30x" path="res://Data/Sprites/UI/Pages/Bag_Page.png" id="13_amk50"]
-[ext_resource type="Texture2D" uid="uid://cdxvw1ryw06ft" path="res://Data/Sprites/UI/Pages/CraftingStation_Page.png" id="14_amsyl"]
-[ext_resource type="Texture2D" uid="uid://lvkvkbxlet05" path="res://Data/Sprites/UI/Pages/Npcsfriendship_Page.png" id="15_hf6d6"]
-[ext_resource type="Texture2D" uid="uid://boagcy43plsur" path="res://Data/Sprites/UI/Pages/Animals_Page.png" id="16_3chyi"]
-[ext_resource type="Texture2D" uid="uid://bjpejd0qyw5dw" path="res://Data/Sprites/UI/Pages/Map_Page.png" id="17_rtlfg"]
-[ext_resource type="Texture2D" uid="uid://cen5dg8fdkhai" path="res://Data/Sprites/UI/Pages/StarInfos_Page.png" id="18_b5p10"]
-[ext_resource type="Texture2D" uid="uid://bvufvglu83lp0" path="res://Data/Sprites/UI/Pages/Config_Page.png" id="19_7hs3d"]
-[ext_resource type="Texture2D" uid="uid://5mqxl0apcj7e" path="res://Data/Sprites/UI/Pages/Exit_Page.png" id="20_jysmk"]
+[ext_resource type="PackedScene" uid="uid://dopkcl4vcrbnw" path="res://Scenes/UI.tscn" id="8_hefx7"]
+[ext_resource type="Texture2D" uid="uid://dlnpoxnwqv77g" path="res://Data/Sprites/Farming/Seeds/Carrot_SeedBag.png" id="9_fgbr3"]
 
 [sub_resource type="GDScript" id="GDScript_y6knj"]
 script/source = "extends CharacterBody2D
 
 @onready var Player_Anim = $Player_Anim
+@onready var Player_CustomAnim = $Player_CustomAnim
 @onready var Player_RayCast = $Player_RayCast
 
-var ItemSelected_Index = 1
-var Slots = [\"Pickaxe\", \"Axe\", \"Hoe\", \"WaterCan\", \"Seed\", null, null, null, null]
+@onready var HotBar_GridContainer = $UI/ItensHotbar/HotBar/HotBar_GridContainer
+
+@onready var Hoe_Pos = $Hoe_Pos
+
+@onready var CarryItem = $CarryItem
+
+@export var SelfInventory = Inventory
 
 const SPEED = 100
+
+var LastDirection = Vector2.ZERO
+
+var ItemSelected: InventoryItem
+var ItemSelected_Index = 1
+
+var Seed = preload(\"res://Scenes/Seed.tscn\")
 
 var Using_Tool = false
 
 func _input(event):
 	if (Input.is_action_pressed(\"Action\")):
-		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\" or Slots[ItemSelected_Index - 1] == \"Axe\" or Slots[ItemSelected_Index - 1] == \"Hoe\"): Using_Tool = true
+		if (ItemSelected != null and ItemSelected.name in [\"Pickaxe\", \"Axe\", \"Hoe\"]): Using_Tool = true
 	else:
 		if (Using_Tool): Using_Tool = false
 	
 	if event is InputEventKey:
 		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
-			var number_pressed = event.keycode - KEY_1 + 1
+			var ItemSelected_Index = event.keycode - KEY_1 + 1
 			
-			ItemSelected_Index = number_pressed
+			ItemSelected = SelfInventory.Items[ItemSelected_Index - 1]
 
 func Move():
 	if (!Using_Tool):
@@ -61,54 +64,119 @@ func Move():
 		
 		move_and_slide()
 
-var LastDirection = Vector2.ZERO
-
 func Animate():
-	if (Input.is_action_pressed(\"Action\")):
-		if (Slots[ItemSelected_Index - 1] == \"Pickaxe\"):
+	if (Input.is_action_pressed(\"Action\") and ItemSelected != null):
+		if (ItemSelected.name == \"Pickaxe\"):
 			if (LastDirection.x == 1): Player_Anim.play(\"Pickaxe_Right\")
 			elif (LastDirection.x == -1): Player_Anim.play(\"Pickaxe_Left\")
 			elif (LastDirection.y == 1): Player_Anim.play(\"Pickaxe_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"Pickaxe_Up\")
-		elif (Slots[ItemSelected_Index - 1] == \"Axe\"):
+		elif (ItemSelected.name == \"Axe\"):
 			if (LastDirection.x == 1): Player_Anim.play(\"Axe_Right\")
 			elif (LastDirection.x == -1): Player_Anim.play(\"Axe_Left\")
 			elif (LastDirection.y == 1): Player_Anim.play(\"Axe_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"Axe_Up\")
-		elif (Slots[ItemSelected_Index - 1] == \"Hoe\"):
-			if (LastDirection.x == 1): Player_Anim.play(\"Hoe_Right\")
-			elif (LastDirection.x == -1): Player_Anim.play(\"Hoe_Left\")
-			elif (LastDirection.y == 1): Player_Anim.play(\"Hoe_Down\")
-			elif (LastDirection.y == -1): Player_Anim.play(\"Hoe_Up\")
-		elif (Slots[ItemSelected_Index - 1] == \"WaterCan\"):
+		elif (ItemSelected.name == \"Hoe\"):
+			if (LastDirection.x == 1): 
+				Player_Anim.play(\"Hoe_Right\")
+				
+				Hoe_Pos.position = Vector2(12, 0)
+			elif (LastDirection.x == -1): 
+				Player_Anim.play(\"Hoe_Left\")
+				
+				Hoe_Pos.position = Vector2(-12, 0)
+			elif (LastDirection.y == 1): 
+				Player_Anim.play(\"Hoe_Down\")
+				
+				Hoe_Pos.position = Vector2(0, 4)
+			elif (LastDirection.y == -1): 
+				Player_Anim.play(\"Hoe_Up\")
+				
+				Hoe_Pos.position = Vector2(0, -12)
+		elif (ItemSelected.name == \"WaterCan\"):
 			if (LastDirection.x == 1): Player_Anim.play(\"WaterCan_Right\")
 			elif (LastDirection.x == -1): Player_Anim.play(\"WaterCan_Left\")
 			elif (LastDirection.y == 1): Player_Anim.play(\"WaterCan_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"WaterCan_Up\")
+		elif (\"SeedBag\" in ItemSelected.name):
+			var Plantations = get_tree().root.get_node(\"TestMap/Plantations\")
+			var TileCords_Plantations = Plantations.local_to_map(Vector2(position.x, position.y))
+			var Tile_PlantationsAtlasPos = Plantations.get_cell_atlas_coords(0, TileCords_Plantations)
+			
+			if (Tile_PlantationsAtlasPos != Vector2i(-1, -1)): 
+				var SeedX = Seed.instantiate()
+				
+				SeedX.position = Vector2(int(position.x / 16), int(position.y / 16)) * 16 - Vector2(8, 8)
+				
+				get_tree().root.get_node(\"TestMap\").add_child(SeedX)
 	else:
-		if (velocity.x > 0): 
-			Player_Anim.play(\"Walk_Right\")
-			LastDirection = Vector2(1, 0)
-		elif (velocity.x < 0): 
-			Player_Anim.play(\"Walk_Left\")
-			LastDirection = Vector2(-1, 0)
-		elif (velocity.y > 0): 
-			Player_Anim.play(\"Walk_Down\")
-			LastDirection = Vector2(0, 1)
-		elif (velocity.y < 0): 
-			Player_Anim.play(\"Walk_Up\")
-			LastDirection = Vector2(0, -1)
-		else: 
-			if (LastDirection.x == 1): Player_Anim.play(\"Idle_Right\")
-			elif (LastDirection.x == -1): Player_Anim.play(\"Idle_Left\")
-			elif (LastDirection.y == 1): Player_Anim.play(\"Idle_Down\")
-			elif (LastDirection.y == -1): Player_Anim.play(\"Idle_Up\")
+		if (velocity == Vector2.ZERO): 
+			if (LastDirection.x == 1): 
+				if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+					Player_CustomAnim.current_animation = \"CarryItem_Right\"
+					Player_CustomAnim.stop()
+				else:
+					Player_Anim.play(\"Idle_Right\")
+			elif (LastDirection.x == -1): 
+				if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+					Player_CustomAnim.current_animation = \"CarryItem_Left\"
+					Player_CustomAnim.stop()
+				else:
+					Player_Anim.play(\"Idle_Left\")
+			elif (LastDirection.y == 1): 
+				if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+					Player_CustomAnim.current_animation = \"CarryItem_Up\"
+					Player_CustomAnim.stop()
+				else:
+					Player_Anim.play(\"Idle_Down\")
+			elif (LastDirection.y == -1): 
+				if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+					Player_CustomAnim.current_animation = \"CarryItem_Down\"
+					Player_CustomAnim.stop()
+				else:
+					Player_Anim.play(\"Idle_Up\")
+		else:
+			if (abs(velocity.x) > abs(velocity.y)):
+				if (velocity.x > 0): 
+					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+						Player_CustomAnim.play(\"CarryItem_Right\")
+					else:
+						Player_Anim.play(\"Walk_Right\")
+					
+					LastDirection = Vector2(1, 0)
+				elif (velocity.x < 0): 
+					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+						Player_CustomAnim.play(\"CarryItem_Left\")
+					else:
+						Player_Anim.play(\"Walk_Left\")
+					
+					LastDirection = Vector2(-1, 0)
+			elif (abs(velocity.x) <= abs(velocity.y)):
+				if (velocity.y > 0): 
+					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+						Player_CustomAnim.play(\"CarryItem_Down\")
+					else:
+						Player_Anim.play(\"Walk_Down\")
+					
+					LastDirection = Vector2(0, 1)
+				elif (velocity.y < 0): 
+					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
+						Player_CustomAnim.play(\"CarryItem_Up\")
+					else:
+						Player_Anim.play(\"Walk_Up\")
+					
+					LastDirection = Vector2(0, -1)
+		
+		if (ItemSelected != null and \"SeedBag\" in ItemSelected.name): CarryItem.visible = true
+		else: CarryItem.visible = false
 
 func Focus_RayCast():
-	if (LastDirection.x == 1): Player_RayCast.target_position = Vector2(10, 0)
-	elif (LastDirection.x == -1): Player_RayCast.target_position = Vector2(-10, 0)
-	elif (LastDirection.y == 1): Player_RayCast.target_position = Vector2(0, 10)
-	elif (LastDirection.y == -1): Player_RayCast.target_position = Vector2(0, -10)
+	if (abs(velocity.x) > abs(velocity.y)):
+		if (LastDirection.x == 1): Player_RayCast.target_position = Vector2(10, 0)
+		elif (LastDirection.x == -1): Player_RayCast.target_position = Vector2(-10, 0)
+	else:
+		if (LastDirection.y == 1): Player_RayCast.target_position = Vector2(0, 10)
+		elif (LastDirection.y == -1): Player_RayCast.target_position = Vector2(0, -10)
 
 func _physics_process(delta):
 	Move()
@@ -118,34 +186,34 @@ func _physics_process(delta):
 func AnimationLooped():
 	if (\"Pickaxe\" in Player_Anim.animation or \"Axe\" in Player_Anim.animation or \"Hoe\" in Player_Anim.animation):
 		if (Player_RayCast.is_colliding()):
-			if (Slots[ItemSelected_Index - 1] == \"Pickaxe\"):
+			if (ItemSelected.name == \"Pickaxe\"):
 				if (\"Stone\" in Player_RayCast.get_collider().get_name()):
 					Player_RayCast.get_collider().Break()
-			elif (Slots[ItemSelected_Index - 1] == \"Axe\"):
+			elif (ItemSelected.name == \"Axe\"):
 				if (\"Tree\" in Player_RayCast.get_collider().get_name()):
 					Player_RayCast.get_collider().Break()
 					
-		if (Slots[ItemSelected_Index - 1] == \"Hoe\"):
+		if (ItemSelected.name == \"Hoe\"):
 			var Floor = get_tree().root.get_node(\"TestMap/Floor\")
-			var PlowedFields = get_tree().root.get_node(\"TestMap/PlowedFields\")
+			var Plantations = get_tree().root.get_node(\"TestMap/Plantations\")
 			
-			var TileCords_Floor = Floor.local_to_map(Vector2(position.x, position.y))
-			var TileCords_PlowedFields = PlowedFields.local_to_map(Vector2(position.x, position.y))
+			var TileCords_Floor = Floor.local_to_map(Vector2(Hoe_Pos.global_position.x, Hoe_Pos.global_position.y))
+			var TileCords_Plantations = Plantations.local_to_map(Vector2(Hoe_Pos.global_position.x, Hoe_Pos.global_position.y))
 			
 			var Tile_FloorAtlasPos = Floor.get_cell_atlas_coords(0, TileCords_Floor)
-			var Tile_PlowedFieldsAtlasPos = PlowedFields.get_cell_atlas_coords(0, TileCords_PlowedFields)
+			var Tile_PlantationsAtlasPos = Plantations.get_cell_atlas_coords(0, TileCords_Plantations)
 			
-			if (Tile_FloorAtlasPos == Vector2i(1, 1) and Tile_PlowedFieldsAtlasPos == Vector2i(-1, -1)): 
-				PlowedFields.set_cell(0, TileCords_PlowedFields, 0, Vector2i(randi_range(0, 3),0)) 
-		elif (Slots[ItemSelected_Index - 1] == \"WaterCan\"):
-			var PlowedFields = get_tree().root.get_node(\"TestMap/PlowedFields\")
-			var TileCords_PlowedFields = PlowedFields.local_to_map(Vector2(position.x, position.y))
-			var Tile_PlowedFieldsAtlasPos = PlowedFields.get_cell_atlas_coords(0, TileCords_PlowedFields)
+			if (Tile_FloorAtlasPos == Vector2i(1, 1) and Tile_PlantationsAtlasPos == Vector2i(-1, -1)): 
+				Plantations.set_cell(0, TileCords_Plantations, 0, Vector2i(randi_range(0, 3),0)) 
+		elif (ItemSelected.name == \"WaterCan\"):
+			# PARA FAZER
 			
-			if (Tile_PlowedFieldsAtlasPos == Vector2i(-1, -1)): 
-				PlowedFields.set_cell(0, TileCords_PlowedFields, 0, Vector2i(randi_range(0, 3),0)) 
-
-
+			var Plantations = get_tree().root.get_node(\"TestMap/Plantations\")
+			var TileCords_Plantations = Plantations.local_to_map(Vector2(position.x, position.y))
+			var Tile_PlantationsAtlasPos = Plantations.get_cell_atlas_coords(0, TileCords_Plantations)
+			
+			if (Tile_PlantationsAtlasPos == Vector2i(-1, -1)): 
+				Plantations.set_cell(0, TileCords_Plantations, 0, Vector2i(randi_range(0, 3),0)) 
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tfsju"]
@@ -227,6 +295,134 @@ region = Rect2(96, 32, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_cv2hx"]
 atlas = ExtResource("1_mb8xm")
 region = Rect2(128, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_npwct"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3duoe"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jpgxd"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_djykg"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_888w8"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6pxj5"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jq0h5"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_72shm"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o8l65"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(0, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wngix"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(32, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wrn25"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(64, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ext0"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(96, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5dxdd"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(128, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nit0x"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(160, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ayvn1"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(192, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rihio"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(224, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3i8j"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6mg7p"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rf0ii"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(64, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pdv6u"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(96, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qnapl"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(128, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nl18r"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(160, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uuh17"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(192, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n68w8"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(224, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_re1sh"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_87acu"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hys8j"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(64, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3qyix"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j02kd"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(128, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_00fr3"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(160, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_01kdk"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(192, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wnm8x"]
+atlas = ExtResource("3_rj54c")
+region = Rect2(224, 32, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vtd4s"]
 atlas = ExtResource("2_im3hh")
@@ -664,6 +860,122 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_npwct")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3duoe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jpgxd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_djykg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_888w8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6pxj5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jq0h5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_72shm")
+}],
+"loop": false,
+"name": &"Carry_Down",
+"speed": 0.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o8l65")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wngix")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wrn25")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ext0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5dxdd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nit0x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ayvn1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rihio")
+}],
+"loop": false,
+"name": &"Carry_Left",
+"speed": 0.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t3i8j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6mg7p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rf0ii")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pdv6u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qnapl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nl18r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uuh17")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n68w8")
+}],
+"loop": false,
+"name": &"Carry_Right",
+"speed": 0.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_re1sh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_87acu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hys8j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3qyix")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j02kd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_00fr3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_01kdk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wnm8x")
+}],
+"loop": false,
+"name": &"Carry_Up",
+"speed": 0.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_vtd4s")
 }, {
 "duration": 1.0,
@@ -893,7 +1205,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Walk_Down",
-"speed": 9.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -922,7 +1234,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Walk_Left",
-"speed": 9.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -951,7 +1263,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Walk_Right",
-"speed": 9.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -980,7 +1292,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Walk_Up",
-"speed": 9.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -1031,89 +1343,289 @@ animations = [{
 radius = 4.0
 height = 8.0
 
-[sub_resource type="GDScript" id="GDScript_13vev"]
-script/source = "extends TextureRect
+[sub_resource type="Animation" id="Animation_mxjey"]
+resource_name = "CarryItem_Down"
+loop_mode = 1
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CarryItem:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.28, 0.42, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(0, -11), Vector2(0, -12), Vector2(0, -11), Vector2(0, -12), Vector2(0, -11)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Player_Anim:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Carry_Down"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Player_Anim:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CarryItem:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
 
-@onready var ItemSelected_Box = $ItemSelected_Box
+[sub_resource type="Animation" id="Animation_qtfxq"]
+resource_name = "CarryItem_Left"
+loop_mode = 1
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CarryItem:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.28, 0.42, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(-1.5, -12), Vector2(-1.5, -13), Vector2(-1.5, -12), Vector2(-1.5, -13), Vector2(-1.5, -12)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Player_Anim:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Carry_Left"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Player_Anim:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CarryItem:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
 
-func _input(event):
-	if event is InputEventKey:
-		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
-			var number_pressed = event.keycode - KEY_1 + 1
-			
-			ItemSelected_Box.position.x = (number_pressed - 1) * 24 + 9
-"
+[sub_resource type="Animation" id="Animation_vfweu"]
+resource_name = "CarryItem_Right"
+loop_mode = 1
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CarryItem:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.28, 0.42, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(1.5, -12), Vector2(1.5, -13), Vector2(1.5, -12), Vector2(1.5, -13), Vector2(1.5, -12)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Player_Anim:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Carry_Right"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Player_Anim:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CarryItem:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
 
-[sub_resource type="GDScript" id="GDScript_4iekd"]
-script/source = "extends Control
+[sub_resource type="Animation" id="Animation_385si"]
+resource_name = "CarryItem_Up"
+loop_mode = 1
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CarryItem:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.28, 0.42, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(0, -11), Vector2(0, -12), Vector2(0, -11), Vector2(0, -12), Vector2(0, -11)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Player_Anim:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Carry_Up"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Player_Anim:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84, 0.98),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CarryItem:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
 
-@onready var Bag_Page = $Bag_Page
-@onready var CraftingStation_Page = $CraftingStation_Page
-@onready var Npcsfriendship_Page = $Npcsfriendship_Page
-@onready var Animals_Page = $Animals_Page
-@onready var Map_Page = $Map_Page
-@onready var StarInfos_Page = $StarInfos_Page
-@onready var Config_Page = $Config_Page
-@onready var Exit_Page = $Exit_Page
+[sub_resource type="Animation" id="Animation_e3k5q"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CarryItem:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -10)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Player_Anim:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Carry_Down"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Player_Anim:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [5]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CarryItem:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
 
-var Pages: Dictionary
-
-func _ready():
-	Pages = {
-		1: Bag_Page,
-		2: CraftingStation_Page,
-		3: Npcsfriendship_Page,
-		4: Animals_Page,
-		5: Map_Page,
-		6: StarInfos_Page,
-		7: Config_Page,
-		8: Exit_Page
-	}
-
-func _input(event):
-	if (Input.is_action_just_pressed(\"OpenInventory\")): visible = !visible
-
-func Select_BagPage():
-	Select_Page(1)
-
-func Select_CraftingStationPage():
-	Select_Page(2)
-
-func Select_NpcsfriendshipPage():
-	Select_Page(3)
-
-func Select_AnimalsPage():
-	Select_Page(4)
-
-func Select_MapPage():
-	Select_Page(5)
-
-func Select_StarInfosPage():
-	Select_Page(6)
-
-func Select_ConfigPage():
-	Select_Page(7)
-
-func Select_ExitPage():
-	Select_Page(8)
-
-func Select_Page(PageSelected_Index):
-	for Page_Index in Pages.keys():
-		if (Page_Index != PageSelected_Index): Pages[Page_Index].visible = false
-		else: Pages[Page_Index].visible = true
-			
-		
-"
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_5mo78"]
+_data = {
+"CarryItem_Down": SubResource("Animation_mxjey"),
+"CarryItem_Left": SubResource("Animation_qtfxq"),
+"CarryItem_Right": SubResource("Animation_vfweu"),
+"CarryItem_Up": SubResource("Animation_385si"),
+"RESET": SubResource("Animation_e3k5q")
+}
 
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
-collision_mask = 30
+collision_mask = 62
 script = SubResource("GDScript_y6knj")
+SelfInventory = ExtResource("1_bkf7a")
 
 [node name="Player_Anim" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_mbhxc")
-animation = &"WaterCan_Right"
+animation = &"Carry_Down"
 autoplay = "Idle_Down"
+frame = 5
 offset = Vector2(0, -12)
 
 [node name="Player_Collision" type="CollisionShape2D" parent="."]
@@ -1126,210 +1638,20 @@ collision_mask = 24
 [node name="Player_Camera" type="Camera2D" parent="."]
 zoom = Vector2(4.5, 4.5)
 
-[node name="UI" type="Control" parent="."]
-z_index = 2
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Hoe_Pos" type="Marker2D" parent="."]
 
-[node name="ItensHotbar" type="Control" parent="UI"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="HotBar" type="TextureRect" parent="UI/ItensHotbar"]
-layout_mode = 1
-offset_left = -59.0
-offset_top = 55.0
-offset_right = 177.0
-offset_bottom = 95.0
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("3_x3nui")
-script = SubResource("GDScript_13vev")
-
-[node name="FirstItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
-layout_mode = 0
-offset_left = 14.0
-offset_top = 12.0
-offset_right = 28.0
-offset_bottom = 25.0
-scale = Vector2(1.12, 1.12)
-texture = ExtResource("4_jo3mm")
-
-[node name="SecondItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
-layout_mode = 0
-offset_left = 41.0
-offset_top = 13.0
-offset_right = 50.0
-offset_bottom = 25.0
-scale = Vector2(1.12, 1.12)
-texture = ExtResource("7_e0fi2")
-
-[node name="ThirdItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
-layout_mode = 0
-offset_left = 63.0
-offset_top = 14.0
-offset_right = 76.0
-offset_bottom = 25.0
-scale = Vector2(1.12, 1.12)
-texture = ExtResource("8_n1aj1")
-
-[node name="FourthItem" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
-layout_mode = 0
-offset_left = 87.0
-offset_top = 16.0
-offset_right = 100.0
-offset_bottom = 24.0
-scale = Vector2(1.12, 1.12)
-texture = ExtResource("10_sr7e6")
-
-[node name="ItemSelected_Box" type="TextureRect" parent="UI/ItensHotbar/HotBar"]
-layout_mode = 0
-offset_left = 9.0
-offset_top = 7.0
-offset_right = 111.0
-offset_bottom = 33.0
-scale = Vector2(0.25, 1)
-texture = ExtResource("7_22cal")
-expand_mode = 1
-
-[node name="Inventory" type="Control" parent="UI"]
+[node name="CarryItem" type="Sprite2D" parent="."]
 visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(0.75, 0.75)
-script = SubResource("GDScript_4iekd")
+z_index = 1
+position = Vector2(0, -10)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("9_fgbr3")
 
-[node name="Bag_Page" type="TextureRect" parent="UI/Inventory"]
-layout_mode = 0
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("13_amk50")
+[node name="Player_CustomAnim" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_5mo78")
+}
 
-[node name="CraftingStation_Page" type="TextureRect" parent="UI/Inventory"]
-visible = false
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("14_amsyl")
-
-[node name="Npcsfriendship_Page" type="TextureRect" parent="UI/Inventory"]
-visible = false
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("15_hf6d6")
-
-[node name="Animals_Page" type="TextureRect" parent="UI/Inventory"]
-visible = false
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("16_3chyi")
-
-[node name="Map_Page" type="TextureRect" parent="UI/Inventory"]
-visible = false
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("17_rtlfg")
-
-[node name="StarInfos_Page" type="TextureRect" parent="UI/Inventory"]
-visible = false
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("18_b5p10")
-
-[node name="Config_Page" type="TextureRect" parent="UI/Inventory"]
-visible = false
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("19_7hs3d")
-
-[node name="Exit_Page" type="TextureRect" parent="UI/Inventory"]
-visible = false
-offset_left = -146.5
-offset_top = -86.0
-offset_right = 146.5
-offset_bottom = 46.0
-texture = ExtResource("20_jysmk")
-
-[node name="Bag_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = -31.5
-offset_top = -80.0
-offset_right = -11.5
-offset_bottom = -52.0
-
-[node name="CraftingStation_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-offset_left = -10.5
-offset_top = -80.0
-offset_right = 8.5
-offset_bottom = -52.0
-
-[node name="Npcsfriendship_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 10.5
-offset_top = -80.0
-offset_right = 29.5
-offset_bottom = -52.0
-
-[node name="Animals_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 31.5
-offset_top = -80.0
-offset_right = 50.5
-offset_bottom = -52.0
-
-[node name="Map_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 52.5
-offset_top = -80.0
-offset_right = 71.5
-offset_bottom = -52.0
-
-[node name="StarInfos_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 73.5
-offset_top = -80.0
-offset_right = 92.5
-offset_bottom = -52.0
-
-[node name="Config_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 94.5
-offset_top = -80.0
-offset_right = 113.5
-offset_bottom = -52.0
-
-[node name="Exit_Btn" type="Button" parent="UI/Inventory"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 115.5
-offset_top = -80.0
-offset_right = 134.5
-offset_bottom = -52.0
+[node name="UI" parent="." instance=ExtResource("8_hefx7")]
 
 [connection signal="animation_looped" from="Player_Anim" to="." method="AnimationLooped"]
-[connection signal="pressed" from="UI/Inventory/Bag_Btn" to="UI/Inventory" method="Select_BagPage"]
-[connection signal="pressed" from="UI/Inventory/CraftingStation_Btn" to="UI/Inventory" method="Select_CraftingStationPage"]
-[connection signal="pressed" from="UI/Inventory/Npcsfriendship_Btn" to="UI/Inventory" method="Select_NpcsfriendshipPage"]
-[connection signal="pressed" from="UI/Inventory/Animals_Btn" to="UI/Inventory" method="Select_AnimalsPage"]
-[connection signal="pressed" from="UI/Inventory/Map_Btn" to="UI/Inventory" method="Select_MapPage"]
-[connection signal="pressed" from="UI/Inventory/StarInfos_Btn" to="UI/Inventory" method="Select_StarInfosPage"]
-[connection signal="pressed" from="UI/Inventory/Config_Btn" to="UI/Inventory" method="Select_ConfigPage"]
-[connection signal="pressed" from="UI/Inventory/Exit_Btn" to="UI/Inventory" method="Select_ExitPage"]

@@ -1,0 +1,640 @@
+[gd_scene load_steps=14 format=3 uid="uid://dopkcl4vcrbnw"]
+
+[ext_resource type="Texture2D" uid="uid://w000cx3012e7" path="res://Data/Sprites/UI/Hotbar.png" id="1_2vu7w"]
+[ext_resource type="Texture2D" uid="uid://dln8l6axy4yxc" path="res://Data/Sprites/UI/ItemSelected_Box.png" id="6_4hc5x"]
+[ext_resource type="Texture2D" uid="uid://cy2xhhh0oo30x" path="res://Data/Sprites/UI/Pages/Bag_Page.png" id="7_6j3qj"]
+[ext_resource type="Texture2D" uid="uid://cdxvw1ryw06ft" path="res://Data/Sprites/UI/Pages/CraftingStation_Page.png" id="8_2lunp"]
+[ext_resource type="Texture2D" uid="uid://lvkvkbxlet05" path="res://Data/Sprites/UI/Pages/Npcsfriendship_Page.png" id="9_g1jwh"]
+[ext_resource type="Texture2D" uid="uid://boagcy43plsur" path="res://Data/Sprites/UI/Pages/Animals_Page.png" id="10_wrpbn"]
+[ext_resource type="Texture2D" uid="uid://bjpejd0qyw5dw" path="res://Data/Sprites/UI/Pages/Map_Page.png" id="11_ajn01"]
+[ext_resource type="Texture2D" uid="uid://cen5dg8fdkhai" path="res://Data/Sprites/UI/Pages/StarInfos_Page.png" id="12_yiqna"]
+[ext_resource type="Texture2D" uid="uid://bvufvglu83lp0" path="res://Data/Sprites/UI/Pages/Config_Page.png" id="13_72tbo"]
+[ext_resource type="Texture2D" uid="uid://5mqxl0apcj7e" path="res://Data/Sprites/UI/Pages/Exit_Page.png" id="14_dobj2"]
+
+[sub_resource type="GDScript" id="GDScript_13vev"]
+script/source = "extends TextureRect
+
+@onready var Player = $\"../../..\"
+
+@onready var ItemSelected_Box = $ItemSelected_Box
+@onready var HotBar_GridContainer = $HotBar_GridContainer
+
+func _ready():
+	var Num_ItemSlot = 0
+	
+	for ItemSlot in HotBar_GridContainer.get_children():
+		if (Player.SelfInventory.Items[Num_ItemSlot] != null):
+			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].texture
+		
+		Num_ItemSlot += 1
+
+func _input(event):
+	if event is InputEventKey:
+		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
+			var number_pressed = event.keycode - KEY_1 + 1
+			
+			ItemSelected_Box.position.x = (number_pressed - 1) * 24 + 9
+"
+
+[sub_resource type="GDScript" id="GDScript_4iekd"]
+script/source = "extends Control
+
+@onready var Bag_Page = $Bag_Page
+@onready var CraftingStation_Page = $CraftingStation_Page
+@onready var Npcsfriendship_Page = $Npcsfriendship_Page
+@onready var Animals_Page = $Animals_Page
+@onready var Map_Page = $Map_Page
+@onready var StarInfos_Page = $StarInfos_Page
+@onready var Config_Page = $Config_Page
+@onready var Exit_Page = $Exit_Page
+
+var Pages: Dictionary
+
+func _ready():
+	Pages = {
+		1: Bag_Page,
+		2: CraftingStation_Page,
+		3: Npcsfriendship_Page,
+		4: Animals_Page,
+		5: Map_Page,
+		6: StarInfos_Page,
+		7: Config_Page,
+		8: Exit_Page
+	}
+
+func _input(event):
+	if (Input.is_action_just_pressed(\"OpenInventory\")): visible = !visible
+
+func Select_BagPage():
+	Select_Page(1)
+
+func Select_CraftingStationPage():
+	Select_Page(2)
+
+func Select_NpcsfriendshipPage():
+	Select_Page(3)
+
+func Select_AnimalsPage():
+	Select_Page(4)
+
+func Select_MapPage():
+	Select_Page(5)
+
+func Select_StarInfosPage():
+	Select_Page(6)
+
+func Select_ConfigPage():
+	Select_Page(7)
+
+func Select_ExitPage():
+	Select_Page(8)
+
+func Select_Page(PageSelected_Index):
+	for Page_Index in Pages.keys():
+		if (Page_Index != PageSelected_Index): Pages[Page_Index].visible = false
+		else: Pages[Page_Index].visible = true
+			
+		
+"
+
+[sub_resource type="GDScript" id="GDScript_r4lfd"]
+script/source = "extends TextureRect
+
+@onready var Player = $\"../../..\"
+@onready var Bag_GridContainer = $Bag_GridContainer
+
+func _ready():
+	var Num_ItemSlot = 9
+	
+	for ItemSlot in Bag_GridContainer.get_children():
+		if (Player.SelfInventory.Items[Num_ItemSlot] != null):
+			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].texture
+		
+		Num_ItemSlot += 1
+"
+
+[node name="UI" type="Control"]
+z_index = 2
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ItensHotbar" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HotBar" type="TextureRect" parent="ItensHotbar"]
+layout_mode = 1
+offset_left = -59.0
+offset_top = 55.0
+offset_right = 177.0
+offset_bottom = 95.0
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_2vu7w")
+script = SubResource("GDScript_13vev")
+
+[node name="ItemSelected_Box" type="TextureRect" parent="ItensHotbar/HotBar"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 7.0
+offset_right = 111.0
+offset_bottom = 33.0
+scale = Vector2(0.25, 1)
+texture = ExtResource("6_4hc5x")
+expand_mode = 1
+
+[node name="HotBar_GridContainer" type="GridContainer" parent="ItensHotbar/HotBar"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 11.0
+offset_right = 227.0
+offset_bottom = 32.0
+columns = 9
+
+[node name="Painel_Item1" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item1"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item2" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item2"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item3" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item3"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item4" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item4"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item5" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item5"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item6" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item6"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item7" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item7"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item8" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item8"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item9" type="Panel" parent="ItensHotbar/HotBar/HotBar_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="ItensHotbar/HotBar/HotBar_GridContainer/Painel_Item9"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Inventory" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.75, 0.75)
+script = SubResource("GDScript_4iekd")
+
+[node name="Bag_Page" type="TextureRect" parent="Inventory"]
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("7_6j3qj")
+script = SubResource("GDScript_r4lfd")
+
+[node name="Bag_GridContainer" type="GridContainer" parent="Inventory/Bag_Page"]
+layout_mode = 1
+offset_left = 95.0
+offset_top = 51.5
+offset_right = 281.0
+offset_bottom = 115.5
+columns = 9
+
+[node name="Painel_Item1" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item1"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item2" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item2"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item3" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item3"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item4" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item4"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item5" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item5"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item6" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item6"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item7" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item7"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item8" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item8"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item9" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item9"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item10" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item10"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item11" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item11"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item12" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item12"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item13" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item13"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item14" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item14"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item15" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item15"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item16" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item16"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item17" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item17"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item18" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item18"]
+position = Vector2(8.33333, 9.16667)
+
+[node name="Painel_Item19" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item19"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item20" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item20"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item21" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item21"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item22" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item22"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item23" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item23"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item24" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item24"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item25" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item25"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item26" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item26"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="Painel_Item27" type="Panel" parent="Inventory/Bag_Page/Bag_GridContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemSprite" type="Sprite2D" parent="Inventory/Bag_Page/Bag_GridContainer/Painel_Item27"]
+position = Vector2(8.33333, 9.16666)
+
+[node name="CraftingStation_Page" type="TextureRect" parent="Inventory"]
+visible = false
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("8_2lunp")
+
+[node name="Npcsfriendship_Page" type="TextureRect" parent="Inventory"]
+visible = false
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("9_g1jwh")
+
+[node name="Animals_Page" type="TextureRect" parent="Inventory"]
+visible = false
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("10_wrpbn")
+
+[node name="Map_Page" type="TextureRect" parent="Inventory"]
+visible = false
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("11_ajn01")
+
+[node name="StarInfos_Page" type="TextureRect" parent="Inventory"]
+visible = false
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("12_yiqna")
+
+[node name="Config_Page" type="TextureRect" parent="Inventory"]
+visible = false
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("13_72tbo")
+
+[node name="Exit_Page" type="TextureRect" parent="Inventory"]
+visible = false
+layout_mode = 0
+offset_left = -146.5
+offset_top = -86.0
+offset_right = 146.5
+offset_bottom = 46.0
+texture = ExtResource("14_dobj2")
+
+[node name="Bag_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -31.5
+offset_top = -80.0
+offset_right = -11.5
+offset_bottom = -52.0
+
+[node name="CraftingStation_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -10.5
+offset_top = -80.0
+offset_right = 8.5
+offset_bottom = -52.0
+
+[node name="Npcsfriendship_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 10.5
+offset_top = -80.0
+offset_right = 29.5
+offset_bottom = -52.0
+
+[node name="Animals_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 31.5
+offset_top = -80.0
+offset_right = 50.5
+offset_bottom = -52.0
+
+[node name="Map_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 52.5
+offset_top = -80.0
+offset_right = 71.5
+offset_bottom = -52.0
+
+[node name="StarInfos_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 73.5
+offset_top = -80.0
+offset_right = 92.5
+offset_bottom = -52.0
+
+[node name="Config_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 94.5
+offset_top = -80.0
+offset_right = 113.5
+offset_bottom = -52.0
+
+[node name="Exit_Btn" type="Button" parent="Inventory"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 115.5
+offset_top = -80.0
+offset_right = 134.5
+offset_bottom = -52.0
+
+[connection signal="pressed" from="Inventory/Bag_Btn" to="Inventory" method="Select_BagPage"]
+[connection signal="pressed" from="Inventory/CraftingStation_Btn" to="Inventory" method="Select_CraftingStationPage"]
+[connection signal="pressed" from="Inventory/Npcsfriendship_Btn" to="Inventory" method="Select_NpcsfriendshipPage"]
+[connection signal="pressed" from="Inventory/Animals_Btn" to="Inventory" method="Select_AnimalsPage"]
+[connection signal="pressed" from="Inventory/Map_Btn" to="Inventory" method="Select_MapPage"]
+[connection signal="pressed" from="Inventory/StarInfos_Btn" to="Inventory" method="Select_StarInfosPage"]
+[connection signal="pressed" from="Inventory/Config_Btn" to="Inventory" method="Select_ConfigPage"]
+[connection signal="pressed" from="Inventory/Exit_Btn" to="Inventory" method="Select_ExitPage"]
