@@ -11,8 +11,10 @@ config_version=5
 [application]
 
 config/name="Tuga Valley"
-run/main_scene="res://Scenes/TestMap.tscn"
+run/main_scene="res://Scenes/Map/HouseTerrain.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
+config/icon="res://Icon.png"
+config/windows_native_icon="res://Icon.ico"
 
 [autoload]
 
@@ -22,6 +24,7 @@ Game="*res://Scripts/GameManager.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/size/mode=2
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 

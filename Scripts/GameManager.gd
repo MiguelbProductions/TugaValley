@@ -58,6 +58,6 @@ var StoneDurability = {
 
 # Global Variables
 
-var CurrentScene = "House"
+var CurrentScene = "HouseTerrain"
 var Day = 1
 var HouseTerrain_Generated = false

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bd86jps7yagvd"
-path="res://.godot/imported/Pickaxe.png-c46c9188d217b7cec7fd8d9b8bfd8976.ctex"
+uid="uid://ck724tcq31ate"
+path="res://.godot/imported/Log.png-70e4025a557cc8bf7b4b6d20b81ae0f0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Data/Sprites/UI/Tools/Pickaxe.png"
-dest_files=["res://.godot/imported/Pickaxe.png-c46c9188d217b7cec7fd8d9b8bfd8976.ctex"]
+source_file="res://Data/Sprites/Nature/Log.png"
+dest_files=["res://.godot/imported/Log.png-70e4025a557cc8bf7b4b6d20b81ae0f0.ctex"]
 
 [params]
 

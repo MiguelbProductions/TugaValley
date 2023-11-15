@@ -23,8 +23,8 @@ func _ready():
 	var Num_ItemSlot = 0
 	
 	for ItemSlot in HotBar_GridContainer.get_children():
-		if (Player.SelfInventory.Items[Num_ItemSlot] != null):
-			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].texture
+		if (Player.SelfInventory.Items[Num_ItemSlot].Item != null):
+			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].Item.texture
 		
 		Num_ItemSlot += 1
 
@@ -107,8 +107,8 @@ func _ready():
 	var Num_ItemSlot = 9
 	
 	for ItemSlot in Bag_GridContainer.get_children():
-		if (Player.SelfInventory.Items[Num_ItemSlot] != null):
-			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].texture
+		if (Player.SelfInventory.Items[Num_ItemSlot].Item != null):
+			ItemSlot.get_node(\"ItemSprite\").texture = Player.SelfInventory.Items[Num_ItemSlot].Item.texture
 		
 		Num_ItemSlot += 1
 "

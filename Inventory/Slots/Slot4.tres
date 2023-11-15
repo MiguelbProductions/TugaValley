@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="InventorySlot" load_steps=3 format=3 uid="uid://xwway88qn8m0"]
+
+[ext_resource type="Resource" uid="uid://dx00jo0gkiouy" path="res://Inventory/Items/WaterCan.tres" id="1_2cuvv"]
+[ext_resource type="Script" path="res://Inventory/Inventory_Slot.gd" id="1_opton"]
+
+[resource]
+script = ExtResource("1_opton")
+Item = ExtResource("1_2cuvv")
+Amount = 1

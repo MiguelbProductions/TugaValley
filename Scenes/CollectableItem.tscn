@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://bpagdebs8p5a3"]
+
+[ext_resource type="Texture2D" uid="uid://ck724tcq31ate" path="res://Data/Sprites/Nature/Log.png" id="1_5mfae"]
+
+[sub_resource type="GDScript" id="GDScript_24e5x"]
+script/source = "extends StaticBody2D
+
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_i1vq7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_a0f2u"]
+radius = 35.5106
+
+[node name="CollectableItem" type="StaticBody2D"]
+script = SubResource("GDScript_24e5x")
+
+[node name="CollectableItem_Texture" type="Sprite2D" parent="."]
+texture = ExtResource("1_5mfae")
+
+[node name="CollectableItem_Item" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_i1vq7")
+
+[node name="CollectRangeArea" type="Area2D" parent="."]
+
+[node name="CollectRangeArea_Collision" type="CollisionShape2D" parent="CollectRangeArea"]
+shape = SubResource("CircleShape2D_a0f2u")

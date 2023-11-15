@@ -37,6 +37,9 @@ var Seed = preload(\"res://Scenes/Seed.tscn\")
 
 var Using_Tool = false
 
+func _ready():
+	ItemSelected = SelfInventory.Items[ItemSelected_Index - 1].Item
+
 func _input(event):
 	if (Input.is_action_pressed(\"Action\")):
 		if (ItemSelected != null and ItemSelected.name in [\"Pickaxe\", \"Axe\", \"Hoe\"]): Using_Tool = true
@@ -47,7 +50,7 @@ func _input(event):
 		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
 			var ItemSelected_Index = event.keycode - KEY_1 + 1
 			
-			ItemSelected = SelfInventory.Items[ItemSelected_Index - 1]
+			ItemSelected = SelfInventory.Items[ItemSelected_Index - 1].Item
 
 func Move():
 	if (!Using_Tool):
@@ -99,16 +102,16 @@ func Animate():
 			elif (LastDirection.y == 1): Player_Anim.play(\"WaterCan_Down\")
 			elif (LastDirection.y == -1): Player_Anim.play(\"WaterCan_Up\")
 		elif (\"SeedBag\" in ItemSelected.name):
-			var Plantations = get_tree().root.get_node(\"TestMap/Plantations\")
+			var Plantations = get_tree().root.get_node(Game.CurrentScene + \"/Plantations\")
 			var TileCords_Plantations = Plantations.local_to_map(Vector2(position.x, position.y))
 			var Tile_PlantationsAtlasPos = Plantations.get_cell_atlas_coords(0, TileCords_Plantations)
 			
 			if (Tile_PlantationsAtlasPos != Vector2i(-1, -1)): 
 				var SeedX = Seed.instantiate()
 				
-				SeedX.position = Vector2(int(position.x / 16), int(position.y / 16)) * 16 - Vector2(8, 8)
+				SeedX.position = Vector2(int(position.x / 16), int(position.y / 16)) * 16 + Vector2(8, 8)
 				
-				get_tree().root.get_node(\"TestMap\").add_child(SeedX)
+				get_tree().root.get_node(Game.CurrentScene).add_child(SeedX)
 	else:
 		if (velocity == Vector2.ZERO): 
 			if (LastDirection.x == 1): 
@@ -187,15 +190,16 @@ func AnimationLooped():
 	if (\"Pickaxe\" in Player_Anim.animation or \"Axe\" in Player_Anim.animation or \"Hoe\" in Player_Anim.animation):
 		if (Player_RayCast.is_colliding()):
 			if (ItemSelected.name == \"Pickaxe\"):
-				if (\"Stone\" in Player_RayCast.get_collider().get_name()):
+				print(Player_RayCast.get_collider().Stone_Type, Game.StoneDicionary.values())
+				if (Player_RayCast.get_collider().Stone_Type in Game.StoneDicionary.values()):
 					Player_RayCast.get_collider().Break()
 			elif (ItemSelected.name == \"Axe\"):
-				if (\"Tree\" in Player_RayCast.get_collider().get_name()):
+				if (Player_RayCast.get_collider().Tree_Type in Game.TreeDicionary.values()):
 					Player_RayCast.get_collider().Break()
 					
 		if (ItemSelected.name == \"Hoe\"):
-			var Floor = get_tree().root.get_node(\"TestMap/Floor\")
-			var Plantations = get_tree().root.get_node(\"TestMap/Plantations\")
+			var Floor = get_tree().root.get_node(Game.CurrentScene + \"/Floor\")
+			var Plantations = get_tree().root.get_node(Game.CurrentScene + \"/Plantations\")
 			
 			var TileCords_Floor = Floor.local_to_map(Vector2(Hoe_Pos.global_position.x, Hoe_Pos.global_position.y))
 			var TileCords_Plantations = Plantations.local_to_map(Vector2(Hoe_Pos.global_position.x, Hoe_Pos.global_position.y))
@@ -208,7 +212,7 @@ func AnimationLooped():
 		elif (ItemSelected.name == \"WaterCan\"):
 			# PARA FAZER
 			
-			var Plantations = get_tree().root.get_node(\"TestMap/Plantations\")
+			var Plantations = get_tree().root.get_node(Game.CurrentScene + \"/Plantations\")
 			var TileCords_Plantations = Plantations.local_to_map(Vector2(position.x, position.y))
 			var Tile_PlantationsAtlasPos = Plantations.get_cell_atlas_coords(0, TileCords_Plantations)
 			
@@ -1636,6 +1640,7 @@ target_position = Vector2(0, 10)
 collision_mask = 24
 
 [node name="Player_Camera" type="Camera2D" parent="."]
+zoom = Vector2(4.5, 4.5)
 
 [node name="Hoe_Pos" type="Marker2D" parent="."]
 

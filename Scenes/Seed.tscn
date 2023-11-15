@@ -16,7 +16,7 @@ func Grow_Seed():
 		Seed_Anim.frame = Step
 		
 		if (Step == 2):
-			var Plantations = get_tree().root.get_node(\"TestMap/Plantations\")
+			var Plantations = get_tree().root.get_node(Game.CurrentScene + \"/Plantations\")
 			var TileCords_Plantations = Plantations.local_to_map(Vector2(position.x, position.y))
 			var Tile_PlantationsAtlasPos = Plantations.get_cell_atlas_coords(0, TileCords_Plantations)
 			

@@ -11,16 +11,20 @@ script/source = "extends StaticBody2D
 @export var Tree_Type = \"Appletree_Default\"
 
 @export var RandomTree_of_Season = true
-@export var ExcludeTrees: Array[String]
+@export var AllowedTrees: Array[String]
 
 @onready var Tree_Anim = $Tree_Anim
 @onready var Tree_CustomAnim = $Tree_CustomAnim
+
+@onready var DropItems_CenterPos = $DropItems_CenterPos
+
+var CollectableItem = preload(\"res://Scenes/CollectableItem.tscn\")
 
 func _ready():
 	if (RandomTree_of_Season):  
 		Tree_Type = Game.TreeDicionary[randi_range(1, 10)]
 		
-		while Tree_Type in ExcludeTrees: Tree_Type = Game.TreeDicionary[randi_range(1, 10)]
+		while Tree_Type not in AllowedTrees: Tree_Type = Game.TreeDicionary[randi_range(1, 10)]
 	
 	Tree_Anim.play(Tree_Type)
 
@@ -31,6 +35,13 @@ func Break():
 		Tree_CustomAnim.play(\"Break\")
 		
 		await Tree_CustomAnim.animation_finished
+		
+		var CollectableItemX = CollectableItem.instantiate()
+		
+		CollectableItemX.position = DropItems_CenterPos.global_position + Vector2(randi_range(-4, 4), randi_range(-4, 4))
+		CollectableItemX.get_node(\"CollectableItem_Texture\").Texture = \"res://Data/Sprites/Nature/Log.png\"
+		
+		get_tree().root.get_node(Game.CurrentScene).add_child(CollectableItemX)
 		
 		queue_free()
 	else:
@@ -269,12 +280,11 @@ _data = {
 y_sort_enabled = true
 collision_layer = 8
 script = SubResource("GDScript_5qhe8")
-ExcludeTrees = Array[String](["Cursedtree_Default", "DeadOld_Default", "Pinetree_Default"])
 
 [node name="Tree_Anim" type="AnimatedSprite2D" parent="."]
 clip_children = 2
 sprite_frames = SubResource("SpriteFrames_0uv1n")
-animation = &"Appletree_Default"
+animation = &"CherryBlossomtree_Default"
 offset = Vector2(0, -6)
 
 [node name="Blink_Color" type="ColorRect" parent="Tree_Anim"]
@@ -288,6 +298,8 @@ offset_bottom = 7.0
 position = Vector2(0.5, 0)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_wrhuo")
+
+[node name="DropItems_CenterPos" type="Marker2D" parent="."]
 
 [node name="Tree_CustomAnim" type="AnimationPlayer" parent="."]
 libraries = {

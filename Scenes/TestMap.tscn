@@ -3855,7 +3855,6 @@ position = Vector2(-208, -62)
 
 [node name="Tree24" parent="Trees" instance=ExtResource("6_u7rp2")]
 position = Vector2(-85, -58)
-ExcludeTrees = Array[String](["Cursedtree_Default", "DeadOld_Default", "Pinetree_Default", "Birchtree_Default"])
 
 [node name="Tree25" parent="Trees" instance=ExtResource("6_u7rp2")]
 position = Vector2(-36, -64)

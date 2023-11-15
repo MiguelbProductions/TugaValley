@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="InventorySlot" load_steps=3 format=3 uid="uid://did1fokiocj73"]
+
+[ext_resource type="Resource" uid="uid://cg65uucx0ot1r" path="res://Inventory/Items/Pickaxe.tres" id="1_dcwyr"]
+[ext_resource type="Script" path="res://Inventory/Inventory_Slot.gd" id="1_ug2um"]
+
+[resource]
+script = ExtResource("1_ug2um")
+Item = ExtResource("1_dcwyr")
+Amount = 1

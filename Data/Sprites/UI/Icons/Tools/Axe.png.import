@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3mvf006ivqrf"
-path="res://.godot/imported/Hoe.png-0d4dc16a72ee36a353a4db2b3bc884a4.ctex"
+uid="uid://b0773yaoe2blh"
+path="res://.godot/imported/Axe.png-a71b443bc5c4f10a1f178f543b36cf86.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Data/Sprites/UI/Tools/Hoe.png"
-dest_files=["res://.godot/imported/Hoe.png-0d4dc16a72ee36a353a4db2b3bc884a4.ctex"]
+source_file="res://Data/Sprites/UI/Icons/Tools/Axe.png"
+dest_files=["res://.godot/imported/Axe.png-a71b443bc5c4f10a1f178f543b36cf86.ctex"]
 
 [params]
 

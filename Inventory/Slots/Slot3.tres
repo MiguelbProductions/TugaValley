@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="InventorySlot" load_steps=3 format=3 uid="uid://tgdnak15byv8"]
+
+[ext_resource type="Resource" uid="uid://c6itycjqvsmtu" path="res://Inventory/Items/Hoe.tres" id="1_lj76h"]
+[ext_resource type="Script" path="res://Inventory/Inventory_Slot.gd" id="1_sg0x5"]
+
+[resource]
+script = ExtResource("1_sg0x5")
+Item = ExtResource("1_lj76h")
+Amount = 1
