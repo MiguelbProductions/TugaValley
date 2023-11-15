@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="InventoryItem" load_steps=3 format=3 uid="uid://dsfxpengc76e2"]
+
+[ext_resource type="Script" path="res://Inventory/Inventory_Item.gd" id="1_46nar"]
+[ext_resource type="Texture2D" uid="uid://dlnpoxnwqv77g" path="res://Data/Sprites/Farming/Seeds/Carrot_SeedBag.png" id="2_f4kui"]
+
+[resource]
+script = ExtResource("1_46nar")
+name = "Carrot_SeedBag"
+texture = ExtResource("2_f4kui")

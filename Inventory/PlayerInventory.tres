@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Inventory" load_steps=7 format=3 uid="uid://dqf74s4k58ix3"]
+
+[ext_resource type="Resource" uid="uid://cg65uucx0ot1r" path="res://Inventory/Items/Pickaxe.tres" id="1_p5f8h"]
+[ext_resource type="Script" path="res://Inventory/Inventory.gd" id="2_a0plu"]
+[ext_resource type="Resource" uid="uid://cpgdkuva3foba" path="res://Inventory/Items/Axe.tres" id="2_u3845"]
+[ext_resource type="Resource" uid="uid://c6itycjqvsmtu" path="res://Inventory/Items/Hoe.tres" id="3_t4mcw"]
+[ext_resource type="Resource" uid="uid://dx00jo0gkiouy" path="res://Inventory/Items/WaterCan.tres" id="4_gkbyd"]
+[ext_resource type="Resource" uid="uid://dsfxpengc76e2" path="res://Inventory/Items/Carrot_SeedBag.tres" id="5_er5uq"]
+
+[resource]
+script = ExtResource("2_a0plu")
+Items = Array[Resource("res://Inventory/Inventory_Item.gd")]([ExtResource("1_p5f8h"), ExtResource("2_u3845"), ExtResource("3_t4mcw"), ExtResource("4_gkbyd"), ExtResource("5_er5uq"), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null])

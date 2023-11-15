@@ -11,8 +11,12 @@ config_version=5
 [application]
 
 config/name="Tuga Valley"
-run/main_scene="res://Scenes/InsideHome.tscn"
+run/main_scene="res://Scenes/TestMap.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
+
+[autoload]
+
+Game="*res://Scripts/GameManager.gd"
 
 [display]
 
@@ -64,6 +68,7 @@ OpenInventory={
 2d_physics/layer_3="Floor"
 2d_physics/layer_4="Trees"
 2d_physics/layer_5="Stones"
+2d_physics/layer_6="Enemies"
 
 [rendering]
 
