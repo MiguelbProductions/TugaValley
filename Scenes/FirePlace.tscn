@@ -1,0 +1,72 @@
+[gd_scene load_steps=13 format=3 uid="uid://bo3uq5whr5rq3"]
+
+[ext_resource type="Texture2D" uid="uid://c8y7drcf0kop" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_darkbrown0.png" id="1_fbi6m"]
+[ext_resource type="Texture2D" uid="uid://cv3mac5ccfxun" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_beige0.png" id="1_mi1rx"]
+[ext_resource type="Texture2D" uid="uid://4xl1sfb4v21c" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_beige1.png" id="2_ej6pv"]
+[ext_resource type="Texture2D" uid="uid://yjkm7rtw1ot0" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_darkbrown1.png" id="2_h8k2p"]
+[ext_resource type="Texture2D" uid="uid://b070jfebpslv" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_beige2.png" id="3_k7cvk"]
+[ext_resource type="Texture2D" uid="uid://83g1l7s5gejm" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_darkbrown2.png" id="3_vxvn7"]
+[ext_resource type="Texture2D" uid="uid://bw80wp8fcisa4" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_darkbrown3.png" id="4_q4top"]
+[ext_resource type="Texture2D" uid="uid://cn6gx40yrg7py" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_beige3.png" id="4_wwm58"]
+[ext_resource type="Texture2D" uid="uid://dsqwc7hhjdum5" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_darkbrown4.png" id="5_kpyox"]
+[ext_resource type="Texture2D" uid="uid://bhv0tkks7k5o7" path="res://Data/Sprites/Buildings/Interiors/fireplace and candles/fireplace_modern_beige4.png" id="5_yd8xw"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_oipba"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_mi1rx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_ej6pv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_k7cvk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_wwm58")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_yd8xw")
+}],
+"loop": true,
+"name": &"Beige",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_fbi6m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_h8k2p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_vxvn7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_q4top")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_kpyox")
+}],
+"loop": true,
+"name": &"Dark",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crbug"]
+size = Vector2(27, 30)
+
+[node name="FirePlace" type="StaticBody2D"]
+y_sort_enabled = true
+collision_layer = 2
+
+[node name="FirePlace_Anim" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_oipba")
+animation = &"Dark"
+autoplay = "Dark"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(0.5, 1)
+shape = SubResource("RectangleShape2D_crbug")

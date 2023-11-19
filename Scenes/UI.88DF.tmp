@@ -20,27 +20,15 @@ script/source = "extends TextureRect
 @onready var ItemSelected_Box = $ItemSelected_Box
 @onready var HotBar_GridContainer = $HotBar_GridContainer
 
-var ItemSelected_Index = 1
-
 func _ready():
 	Update_Inventory()
 
 func _input(event):
 	if event is InputEventKey:
 		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
-			ItemSelected_Index = event.keycode - KEY_1 + 1
+			var number_pressed = event.keycode - KEY_1 + 1
 			
-			ItemSelected_Box.position.x = (ItemSelected_Index - 1) * 24 + 9
-	
-	if (event is InputEventJoypadMotion):
-		if (Input.is_action_just_pressed(\"NextSlot\")):
-			ItemSelected_Index += 1
-			
-			ItemSelected_Box.position.x = (ItemSelected_Index - 1) * 24 + 9
-		elif (Input.is_action_just_pressed(\"PreviousSlot\")):
-			ItemSelected_Index -= 1
-			
-			ItemSelected_Box.position.x = (ItemSelected_Index - 1) * 24 + 9
+			ItemSelected_Box.position.x = (number_pressed - 1) * 24 + 9
 
 func Update_Inventory():
 	var Num_ItemSlot = 0

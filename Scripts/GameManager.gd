@@ -58,6 +58,19 @@ var StoneDurability = {
 
 # Global Variables
 
+var PlayerConfigs_per_Scene = {
+	"HouseTerrain": {
+		"House": {
+			"Position": Vector2(),
+			"Direction": "Down"
+		}
+	}
+}
+
 var CurrentScene = "HouseTerrain"
+var LastScene = ""
+
+var ChangingScene = false
+
 var Day = 1
-var HouseTerrain_Generated = false
+

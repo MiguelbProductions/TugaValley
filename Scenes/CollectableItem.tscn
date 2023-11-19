@@ -1,14 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://bpagdebs8p5a3"]
-
-[ext_resource type="Texture2D" uid="uid://ck724tcq31ate" path="res://Data/Sprites/Nature/Log.png" id="1_5mfae"]
+[gd_scene load_steps=8 format=3 uid="uid://bpagdebs8p5a3"]
 
 [sub_resource type="GDScript" id="GDScript_24e5x"]
 script/source = "extends CharacterBody2D
+
+@onready var CollectableItem_Anim = $CollectableItem_Anim
 
 const SPEED = 50
 
 var GoToPlayer = false
 var Player
+
+func _ready():
+	CollectableItem_Anim.play(\"Jump\")
 
 func Player_GetItem(body):
 	if (\"Player\" in body.name):
@@ -50,27 +53,122 @@ radius = 35.5106
 [sub_resource type="CircleShape2D" id="CircleShape2D_ataas"]
 radius = 8.88889
 
+[sub_resource type="Animation" id="Animation_28puj"]
+resource_name = "Jump"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CollectRangeArea/CollectRangeArea_Collision:disabled")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("InPlayerArea/InPlayerArea_Collision:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CollectableItem_Texture:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -6), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_g3fov"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CollectRangeArea/CollectRangeArea_Collision:disabled")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("InPlayerArea/InPlayerArea_Collision:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CollectableItem_Texture:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-2.22222, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ao6ih"]
+_data = {
+"Jump": SubResource("Animation_28puj"),
+"RESET": SubResource("Animation_g3fov")
+}
+
 [node name="CollectableItem" type="CharacterBody2D"]
 scale = Vector2(0.45, 0.45)
 script = SubResource("GDScript_24e5x")
 
 [node name="CollectableItem_Texture" type="Sprite2D" parent="."]
-texture = ExtResource("1_5mfae")
+position = Vector2(-2.22222, 0)
 
 [node name="CollectableItem_Item" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource("CircleShape2D_i1vq7")
 
 [node name="CollectRangeArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 64
 
 [node name="CollectRangeArea_Collision" type="CollisionShape2D" parent="CollectRangeArea"]
 shape = SubResource("CircleShape2D_a0f2u")
+disabled = true
 
 [node name="InPlayerArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 64
 
 [node name="InPlayerArea_Collision" type="CollisionShape2D" parent="InPlayerArea"]
 shape = SubResource("CircleShape2D_ataas")
+disabled = true
+
+[node name="CollectableItem_Anim" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ao6ih")
+}
 
 [connection signal="body_entered" from="CollectRangeArea" to="." method="Player_GetItem"]
 [connection signal="body_entered" from="InPlayerArea" to="." method="Item_InPlayer"]
