@@ -13,7 +13,11 @@
 script/source = "extends Node2D
 
 func PlayerInDoor(body):
-	if (\"Player\" in body.name):
+	if (\"Player\" in body.name and !Game.ChangingScene):
+		Game.ChangingScene = true
+		Game.CurrentScene = \"HouseTerrain\"
+		Game.LastScene = \"House\"
+		
 		body.get_node(\"Player_CustomAnim\").play(\"Scene_FadeIn\")
 		
 		await body.get_node(\"Player_CustomAnim\").animation_finished
@@ -5317,9 +5321,11 @@ texture = ExtResource("1_apvaq")
 0:37/0 = 0
 0:37/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:37/0/physics_layer_0/angular_velocity = 0.0
+0:37/0/physics_layer_0/polygon_0/points = PackedVector2Array(-2.875, 8, -8, 8, -8, -8, 8, -8, 8, -3.25, -3, -3.375)
 1:37/0 = 0
 1:37/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 1:37/0/physics_layer_0/angular_velocity = 0.0
+1:37/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -2.625, -8, -8, 8, -8, 8, 8, 3.125, 8, 3.5, -2.25)
 2:37/0 = 0
 2:37/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 2:37/0/physics_layer_0/angular_velocity = 0.0
@@ -46727,6 +46733,6 @@ position = Vector2(-16, 103)
 position = Vector2(76, 47)
 
 [node name="Player" parent="." instance=ExtResource("2_5jefg")]
-position = Vector2(6, 103)
+position = Vector2(7, 106)
 
 [connection signal="body_entered" from="Door_AreaDetector" to="." method="PlayerInDoor"]

@@ -15,6 +15,7 @@
 script/source = "extends CharacterBody2D
 
 @onready var Player_Anim = $Player_Anim
+
 @onready var Player_CustomAnim = $Player_CustomAnim
 @onready var Player_RayCast = $Player_RayCast
 
@@ -44,7 +45,30 @@ func _ready():
 	ItemSelected = SelfInventory.Items[ItemSelected_Index - 1].Item
 	
 	if (Game.ChangingScene):
+		var PlayerConfigs = Game.PlayerConfigs_per_Scene[Game.CurrentScene][Game.LastScene]
+		
+		position = PlayerConfigs.Position
+		
+		if (PlayerConfigs.Direction == \"Down\"):
+			Player_Anim.play(\"Idle_Down\")
+			
+			Player_RayCast.target_position = Vector2(0, 10)
+		elif (PlayerConfigs.Direction == \"Up\"):
+			Player_Anim.play(\"Idle_Up\")
+			
+			Player_RayCast.target_position = Vector2(0, -10)
+		elif (PlayerConfigs.Direction == \"Right\"):
+			Player_Anim.play(\"Idle_Right\")
+			
+			Player_RayCast.target_position = Vector2(10, 0)
+		elif (PlayerConfigs.Direction == \"Left\"):
+			Player_Anim.play(\"Idle_Left\")
+			
+			Player_RayCast.target_position = Vector2(-10, 0)
+		
 		Player_CustomAnim.play(\"Scene_FadeOut\")
+		
+		Game.ChangingScene = false
 
 func _input(event):
 	if (Input.is_action_pressed(\"Action\")):
@@ -86,37 +110,37 @@ func Move():
 func Animate():
 	if (Input.is_action_pressed(\"Action\") and ItemSelected != null):
 		if (ItemSelected.name == \"Pickaxe\"):
-			if (LastDirection.x == 1): Player_Anim.play(\"Pickaxe_Right\")
-			elif (LastDirection.x == -1): Player_Anim.play(\"Pickaxe_Left\")
-			elif (LastDirection.y == 1): Player_Anim.play(\"Pickaxe_Down\")
-			elif (LastDirection.y == -1): Player_Anim.play(\"Pickaxe_Up\")
+			if (LastDirection.x == 1): Set_Animation(\"Pickaxe_Right\")
+			elif (LastDirection.x == -1): Set_Animation(\"Pickaxe_Left\")
+			elif (LastDirection.y == 1): Set_Animation(\"Pickaxe_Down\")
+			elif (LastDirection.y == -1): Set_Animation(\"Pickaxe_Up\")
 		elif (ItemSelected.name == \"Axe\"):
-			if (LastDirection.x == 1): Player_Anim.play(\"Axe_Right\")
-			elif (LastDirection.x == -1): Player_Anim.play(\"Axe_Left\")
-			elif (LastDirection.y == 1): Player_Anim.play(\"Axe_Down\")
-			elif (LastDirection.y == -1): Player_Anim.play(\"Axe_Up\")
+			if (LastDirection.x == 1): Set_Animation(\"Axe_Right\")
+			elif (LastDirection.x == -1): Set_Animation(\"Axe_Left\")
+			elif (LastDirection.y == 1): Set_Animation(\"Axe_Down\")
+			elif (LastDirection.y == -1): Set_Animation(\"Axe_Up\")
 		elif (ItemSelected.name == \"Hoe\"):
 			if (LastDirection.x == 1): 
-				Player_Anim.play(\"Hoe_Right\")
+				Set_Animation(\"Hoe_Right\")
 				
 				Hoe_Pos.position = Vector2(12, 0)
 			elif (LastDirection.x == -1): 
-				Player_Anim.play(\"Hoe_Left\")
+				Set_Animation(\"Hoe_Left\")
 				
 				Hoe_Pos.position = Vector2(-12, 0)
 			elif (LastDirection.y == 1): 
-				Player_Anim.play(\"Hoe_Down\")
+				Set_Animation(\"Hoe_Down\")
 				
 				Hoe_Pos.position = Vector2(0, 4)
 			elif (LastDirection.y == -1): 
-				Player_Anim.play(\"Hoe_Up\")
+				Set_Animation(\"Hoe_Up\")
 				
 				Hoe_Pos.position = Vector2(0, -12)
 		elif (ItemSelected.name == \"WaterCan\"):
-			if (LastDirection.x == 1): Player_Anim.play(\"WaterCan_Right\")
-			elif (LastDirection.x == -1): Player_Anim.play(\"WaterCan_Left\")
-			elif (LastDirection.y == 1): Player_Anim.play(\"WaterCan_Down\")
-			elif (LastDirection.y == -1): Player_Anim.play(\"WaterCan_Up\")
+			if (LastDirection.x == 1): Set_Animation(\"WaterCan_Right\")
+			elif (LastDirection.x == -1): Set_Animation(\"WaterCan_Left\")
+			elif (LastDirection.y == 1): Set_Animation(\"WaterCan_Down\")
+			elif (LastDirection.y == -1): Set_Animation(\"WaterCan_Up\")
 		elif (\"SeedBag\" in ItemSelected.name):
 			var Plantations = get_tree().root.get_node(Game.CurrentScene + \"/Plantations\")
 			var TileCords_Plantations = Plantations.local_to_map(Vector2(position.x, position.y))
@@ -135,39 +159,39 @@ func Animate():
 					Player_CustomAnim.current_animation = \"CarryItem_Right\"
 					Player_CustomAnim.stop()
 				else:
-					Player_Anim.play(\"Idle_Right\")
+					Set_Animation(\"Idle_Right\")
 			elif (LastDirection.x == -1): 
 				if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
 					Player_CustomAnim.current_animation = \"CarryItem_Left\"
 					Player_CustomAnim.stop()
 				else:
-					Player_Anim.play(\"Idle_Left\")
+					Set_Animation(\"Idle_Left\")
 			elif (LastDirection.y == 1): 
 				if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
 					Player_CustomAnim.current_animation = \"CarryItem_Down\"
 					Player_CustomAnim.stop()
 				else:
-					Player_Anim.play(\"Idle_Down\")
+					Set_Animation(\"Idle_Down\")
 			elif (LastDirection.y == -1): 
 				if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
 					Player_CustomAnim.current_animation = \"CarryItem_Up\"
 					Player_CustomAnim.stop()
 				else:
-					Player_Anim.play(\"Idle_Up\")
+					Set_Animation(\"Idle_Up\")
 		else:
 			if (abs(velocity.x) > abs(velocity.y)):
 				if (velocity.x > 0): 
 					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
 						Player_CustomAnim.play(\"CarryItem_Right\")
 					else:
-						Player_Anim.play(\"Walk_Right\")
+						Set_Animation(\"Walk_Right\")
 					
 					LastDirection = Vector2(1, 0)
 				elif (velocity.x < 0): 
 					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
 						Player_CustomAnim.play(\"CarryItem_Left\")
 					else:
-						Player_Anim.play(\"Walk_Left\")
+						Set_Animation(\"Walk_Left\")
 					
 					LastDirection = Vector2(-1, 0)
 			elif (abs(velocity.x) <= abs(velocity.y)):
@@ -175,19 +199,22 @@ func Animate():
 					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
 						Player_CustomAnim.play(\"CarryItem_Down\")
 					else:
-						Player_Anim.play(\"Walk_Down\")
+						Set_Animation(\"Walk_Down\")
 					
 					LastDirection = Vector2(0, 1)
 				elif (velocity.y < 0): 
 					if (ItemSelected != null and \"SeedBag\" in ItemSelected.name):
 						Player_CustomAnim.play(\"CarryItem_Up\")
 					else:
-						Player_Anim.play(\"Walk_Up\")
+						Set_Animation(\"Walk_Up\")
 					
 					LastDirection = Vector2(0, -1)
 		
 		if (ItemSelected != null and \"SeedBag\" in ItemSelected.name): CarryItem.visible = true
 		else: CarryItem.visible = false
+
+func Set_Animation(AnimationName):
+	Player_Anim.play(AnimationName)
 
 func Focus_RayCast():
 	if (abs(velocity.x) > abs(velocity.y)):

@@ -61,13 +61,19 @@ var StoneDurability = {
 var PlayerConfigs_per_Scene = {
 	"HouseTerrain": {
 		"House": {
-			"Position": Vector2(),
+			"Position": Vector2(-1, 71),
 			"Direction": "Down"
+		}
+	},
+	"House": {
+		"HouseTerrain": {
+			"Position": Vector2(56, 138),
+			"Direction": "Up"
 		}
 	}
 }
 
-var CurrentScene = "HouseTerrain"
+var CurrentScene = "House"
 var LastScene = ""
 
 var ChangingScene = false

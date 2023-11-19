@@ -99,7 +99,11 @@ func Generate_Florest():
 
 
 func EnterinHouse(body):
-	if (\"Player\" in body.name):
+	if (\"Player\" in body.name and !Game.ChangingScene):
+		Game.ChangingScene = true
+		Game.CurrentScene = \"House\"
+		Game.LastScene = \"HouseTerrain\"
+		
 		body.get_node(\"Player_CustomAnim\").play(\"Scene_FadeIn\")
 		
 		await body.get_node(\"Player_CustomAnim\").animation_finished
@@ -7569,6 +7573,6 @@ shape = SubResource("CapsuleShape2D_l61ib")
 polygon = PackedVector2Array(-640, -192, 656, -192, 656, 124, 686, 124, 686, 182, 656, 182, 656, 864, 54, 864, 54, 891, -23, 891, -23, 864, -640, 864, -640, 164, -660, 164, -660, 107, -640, 107, -640, -192, -641, -192, -642, 105, -662, 105, -662, 168, -643, 168, -646, 871, -31, 874, -31, 904, 65, 904, 65, 871, 663, 872, 663, 188, 692, 188, 693, 117, 660, 117, 659, -197, -641, -196, -641, -192)
 
 [node name="Player" parent="." instance=ExtResource("6_xyynh")]
-position = Vector2(0, 114)
+position = Vector2(-1, 117)
 
 [connection signal="body_entered" from="TeleportPorts/HouseDoor" to="." method="EnterinHouse"]
