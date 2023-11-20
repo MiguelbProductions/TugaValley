@@ -1,14 +1,14 @@
-[gd_scene load_steps=20 format=3 uid="uid://qduwrq0j3wxc"]
+[gd_scene load_steps=22 format=3 uid="uid://qduwrq0j3wxc"]
 
 [ext_resource type="Texture2D" uid="uid://cdnr5vghhsign" path="res://Data/Sprites/Buildings/Interiors/basics/rugs.png" id="1_6soqc"]
 [ext_resource type="Texture2D" uid="uid://bq7jjecl4mm2d" path="res://Data/Sprites/Buildings/Interiors/basics/wallpapers.png" id="1_apvaq"]
-[ext_resource type="PackedScene" uid="uid://c5n0iduti2w44" path="res://Scenes/Player.tscn" id="2_5jefg"]
 [ext_resource type="Texture2D" uid="uid://cn43xqxsk8aj2" path="res://Data/Sprites/Buildings/Interiors/furniture/decorations.png" id="2_d5oxt"]
 [ext_resource type="PackedScene" uid="uid://dokxobju81iou" path="res://Scenes/PlayerBed.tscn" id="3_65ti3"]
 [ext_resource type="Texture2D" uid="uid://b0x12lhcjvoba" path="res://Data/Sprites/Buildings/Interiors/furniture/tables_shadow.png" id="3_b0ohr"]
 [ext_resource type="Texture2D" uid="uid://x8mswpxxegdm" path="res://Data/Sprites/Buildings/Interiors/furniture/chairs_shadow.png" id="4_lbapk"]
 [ext_resource type="Texture2D" uid="uid://5sfjnohjgakv" path="res://Data/Sprites/Buildings/Interiors/global.png" id="6_c7ih0"]
 [ext_resource type="PackedScene" uid="uid://bo3uq5whr5rq3" path="res://Scenes/FirePlace.tscn" id="7_io3pj"]
+[ext_resource type="PackedScene" uid="uid://0xh1jqcbw3nb" path="res://Scenes/NPC.tscn" id="10_pbypo"]
 
 [sub_resource type="GDScript" id="GDScript_q3dc2"]
 script/source = "extends Node2D
@@ -38996,6 +38996,23 @@ sources/0 = SubResource("TileSetAtlasSource_xkdd3")
 radius = 2.0
 height = 16.0
 
+[sub_resource type="Curve2D" id="Curve2D_n1oiv"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -125, -21, 0, 0, 0, 0, 19, -89, 0, 0, 0, 0, 181, -32, 0, 0, 0, 0, 158, 92, 0, 0, 0, 0, 169, 159, 0, 0, 0, 0, 63, 179, 0, 0, 0, 0, -57, 183, 0, 0, 0, 0, -125, -21, 0, 0, 0, 0, 22, -88)
+}
+point_count = 9
+
+[sub_resource type="GDScript" id="GDScript_cr270"]
+script/source = "extends Path2D
+
+var x = 0
+
+func _process(delta):
+	x += delta
+	
+	$PathFollow2D.progress = x * 200
+"
+
 [node name="InsideHome" type="Node2D"]
 y_sort_enabled = true
 script = SubResource("GDScript_q3dc2")
@@ -39049,7 +39066,20 @@ position = Vector2(-16, 103)
 z_index = -1
 position = Vector2(76, 47)
 
-[node name="Player" parent="." instance=ExtResource("2_5jefg")]
-position = Vector2(11, 105)
+[node name="Path2D" type="Path2D" parent="."]
+position = Vector2(194, 0)
+curve = SubResource("Curve2D_n1oiv")
+script = SubResource("GDScript_cr270")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
+position = Vector2(-125, -21)
+rotation = -0.441179
+
+[node name="NPC" parent="Path2D/PathFollow2D" instance=ExtResource("10_pbypo")]
+position = Vector2(104.064, 72.365)
+rotation = 0.441179
+
+[node name="Camera2D" type="Camera2D" parent="Path2D/PathFollow2D/NPC"]
+zoom = Vector2(2, 2)
 
 [connection signal="body_entered" from="Door_AreaDetector" to="." method="PlayerInDoor"]

@@ -31,7 +31,7 @@ script/source = "extends CharacterBody2D
 
 @export var SelfInventory = Inventory
 
-const SPEED = 75
+var speed = 75
 
 var LastDirection = Vector2.ZERO
 
@@ -94,17 +94,20 @@ func _input(event):
 			ItemSelected = SelfInventory.Items[ItemSelected_Index - 1].Item
 
 func Move():
+	if (Game.CurrentEnergy < 40 and speed == 75): speed = 30
+	elif (Game.CurrentEnergy >= 40 and speed == 30): speed = 75
+	
 	if (!Using_Tool):
 		var directionX = Input.get_axis(\"Left\", \"Right\")
 		var directionY = Input.get_axis(\"Up\", \"Down\")
 		
 		if directionX: velocity.x = directionX
-		else: velocity.x = move_toward(velocity.x, 0, SPEED)
+		else: velocity.x = move_toward(velocity.x, 0, speed)
 		
 		if directionY: velocity.y = directionY
-		else: velocity.y = move_toward(velocity.y, 0, SPEED)
+		else: velocity.y = move_toward(velocity.y, 0, speed)
 		
-		velocity = velocity.normalized() * SPEED
+		velocity = velocity.normalized() * speed
 		
 		move_and_slide()
 

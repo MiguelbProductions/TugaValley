@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cxtpefd7fms87"]
+[gd_scene load_steps=19 format=3 uid="uid://cxtpefd7fms87"]
 
 [ext_resource type="Texture2D" uid="uid://d34g2jt2g4nw7" path="res://Data/Sprites/Nature/floor.png" id="1_867c0"]
 [ext_resource type="Texture2D" uid="uid://mik0l2ko5ytm" path="res://Data/Sprites/Nature/plowedfields.png" id="2_jmpwm"]
@@ -7,7 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://b42tdinojakx7" path="res://Data/Sprites/Buildings/buildings.png" id="5_7m0r0"]
 [ext_resource type="PackedScene" uid="uid://dyifolmkn04vr" path="res://Scenes/Tree.tscn" id="6_u7rp2"]
 [ext_resource type="PackedScene" uid="uid://cp2508vycjrs6" path="res://Scenes/Stone.tscn" id="7_0nelg"]
-[ext_resource type="PackedScene" uid="uid://c5n0iduti2w44" path="res://Scenes/Player.tscn" id="8_y7so0"]
 
 [sub_resource type="GDScript" id="GDScript_68jcf"]
 script/source = "extends Node2D
@@ -3939,8 +3938,5 @@ position = Vector2(-344, -132)
 
 [node name="Stone18" parent="Stones" instance=ExtResource("7_0nelg")]
 position = Vector2(-344, -118)
-
-[node name="Player" parent="." instance=ExtResource("8_y7so0")]
-position = Vector2(-128, -56)
 
 [connection signal="body_entered" from="Door_AreaDetector" to="." method="PlayerInDoor"]
