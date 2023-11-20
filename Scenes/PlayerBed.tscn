@@ -1,7 +1,16 @@
-[gd_scene load_steps=6 format=3 uid="uid://dokxobju81iou"]
+[gd_scene load_steps=8 format=3 uid="uid://dokxobju81iou"]
 
 [ext_resource type="Texture2D" uid="uid://d08gwggj50wka" path="res://Data/Sprites/Buildings/Interiors/furniture/playerbed.png" id="1_6iu85"]
 [ext_resource type="Texture2D" uid="uid://ua16cc66w55t" path="res://Data/Sprites/Buildings/Interiors/furniture/playerbed_blanket.png" id="2_0xmma"]
+
+[sub_resource type="GDScript" id="GDScript_vc6j5"]
+script/source = "extends StaticBody2D
+
+func PlayerInBed(body):
+	if (\"Player\" in body.name):
+		body.get_node(\"UI/SleepBar\").visible = true
+		body.get_node(\"UI/ItensHotbar\").visible = false
+"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cfnts"]
 size = Vector2(28, 20)
@@ -12,9 +21,13 @@ size = Vector2(28, 7)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cxke7"]
 size = Vector2(10, 9)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jc2q3"]
+size = Vector2(4, 9)
+
 [node name="PlayerBed" type="StaticBody2D"]
 y_sort_enabled = true
 collision_layer = 2
+script = SubResource("GDScript_vc6j5")
 
 [node name="PlayerBed_Anim" type="Sprite2D" parent="."]
 position = Vector2(0, -5)
@@ -28,18 +41,25 @@ texture = ExtResource("2_0xmma")
 offset = Vector2(0, -10)
 
 [node name="PlayerBed_Collision" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(0, 14)
 shape = SubResource("RectangleShape2D_cfnts")
 
 [node name="PlayerBed_Collision2" type="CollisionShape2D" parent="."]
-visible = false
 z_index = 1
 position = Vector2(0, -8.5)
 shape = SubResource("RectangleShape2D_jq4ws")
 
 [node name="PlayerBed_Collision3" type="CollisionShape2D" parent="."]
-visible = false
 z_index = 1
 position = Vector2(-9, -0.5)
 shape = SubResource("RectangleShape2D_cxke7")
+
+[node name="SleepArea_Detector" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="SleepArea_Collision" type="CollisionShape2D" parent="SleepArea_Detector"]
+z_index = 1
+position = Vector2(-2, -0.5)
+shape = SubResource("RectangleShape2D_jc2q3")
+
+[connection signal="body_entered" from="SleepArea_Detector" to="." method="PlayerInBed"]

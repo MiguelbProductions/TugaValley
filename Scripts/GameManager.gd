@@ -73,10 +73,38 @@ var PlayerConfigs_per_Scene = {
 	}
 }
 
+var Energy_per_Tool = {
+	"Pickaxe": {
+		"Used": 2,
+		"Failed": 1
+	},
+	"Axe":  {
+		"Used": 2,
+		"Failed": 1
+	},
+	"Hoe":  {
+		"Used": 2,
+		"Failed": 1
+	},
+	"WaterCan":  {
+		"Used": 1,
+		"Failed": 1
+	}
+}
+
 var CurrentScene = "House"
 var LastScene = ""
 
 var ChangingScene = false
+var Sleeping = false
 
+var DayofWeek = "Monday"
 var Day = 1
+var Hours = 6
+var Minutes = 0
+
+var Money = 0
+
+var MaxEnergy = 250
+var CurrentEnergy = 250
 

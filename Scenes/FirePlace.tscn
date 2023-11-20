@@ -62,9 +62,11 @@ y_sort_enabled = true
 collision_layer = 2
 
 [node name="FirePlace_Anim" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 16)
 sprite_frames = SubResource("SpriteFrames_oipba")
 animation = &"Dark"
 autoplay = "Dark"
+offset = Vector2(0, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
